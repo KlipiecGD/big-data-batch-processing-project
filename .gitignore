@@ -1,0 +1,13 @@
+airflow.*
+logs/
+simple_auth_manager_passwords.json.generated
+
+venv/
+
+data/
+
+.env
+__pycache__/
+*.pdf
+
+*.txt
