@@ -87,6 +87,11 @@ def run_batch_processing() -> None:
         logger.info("Tables truncated successfully.")
     except Exception as e:
         logger.error(f"Failed to truncate tables: {e}")
+    finally:
+        if 'cur' in locals() and not cur.closed:
+            cur.close()
+        if 'conn' in locals() and conn and not conn.closed:
+            conn.close()
 
     for table in source_tables:
         try:

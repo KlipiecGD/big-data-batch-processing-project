@@ -9,6 +9,6 @@ queries:
   query_files: ['day_to_day_sales.sql', 'top_spenders.sql', 'performance_analysis_by_country.sql', 'sales_moving_average.sql', 'top_products_by_category.sql']
 
 database:
-  script_path: database_creation/
+  scripts_path: database_creation/
   setup_script: database_creation/create_tables.sql
   required_tables: ['users', 'products', 'transactions']

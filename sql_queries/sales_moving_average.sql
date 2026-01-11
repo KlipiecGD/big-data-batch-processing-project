@@ -15,7 +15,11 @@ SELECT
     SUM(COALESCE(SUM(t.quantity * p.price), 0)) OVER (
         ORDER BY dr.transaction_date 
         ROWS BETWEEN 6 PRECEDING AND CURRENT ROW
-    ) / 7 AS moving_average_sales
+    ) / 
+    COUNT(*) OVER (
+        ORDER BY dr.transaction_date 
+        ROWS BETWEEN 6 PRECEDING AND CURRENT ROW
+    ) AS moving_average_sales
 FROM 
     date_range dr
 LEFT JOIN 
