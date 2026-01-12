@@ -1,13 +1,18 @@
+# Airflow and Execution Artifacts 
 airflow.*
 logs/
 simple_auth_manager_passwords.json.generated
 
+# Python and Dependencies 
 venv/
+__pycache__/
 
+# Project Data 
 data/
 
+# Sensitive Information 
 .env
-__pycache__/
-*.pdf
 
+# Miscellaneous / Non-Source Files 
+*.pdf
 *.txt
