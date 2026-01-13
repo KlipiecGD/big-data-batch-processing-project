@@ -1,8 +1,10 @@
 data_generation:
-  data_path: data/
-  users_count: 2000
-  items_count: 1000
-  transactions_count: 12000
+  data_path: bronze_layer/
+  users_count: 10000
+  items_count: 10000
+  transactions_count: 18000
+  noise_level: 0.03
+  null_wrong_proportion: 0.5
 
 queries:
   queries_path: sql_queries/

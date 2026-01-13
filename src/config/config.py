@@ -15,7 +15,7 @@ class Config:
         """
         # Determine the location of this file (src/config/config.py)
         current_file = Path(__file__)
-        
+
         # Calculate Project Root: src/config/ -> src/ -> Project Root
         self.project_root = current_file.parent.parent.parent
 
@@ -52,12 +52,12 @@ class Config:
             return value
         except (KeyError, TypeError):
             return default
-        
+
     @property
     def data_generation(self) -> dict:
         """Get data generation configuration."""
         return self._config.get("data_generation", {})
-    
+
     @property
     def queries(self) -> dict:
         """Get queries configuration."""

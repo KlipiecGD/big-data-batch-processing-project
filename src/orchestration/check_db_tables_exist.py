@@ -9,6 +9,7 @@ from src.logging_utils.logger import logger
 
 load_dotenv()
 
+
 def check_db_tables_exist(**kwargs) -> str:
     """
     Check if specific tables exist in the PostgreSQL database.
@@ -24,20 +25,22 @@ def check_db_tables_exist(**kwargs) -> str:
             dbname=os.getenv("DB_NAME"),
             user=os.getenv("DB_USER"),
             password=os.getenv("DB_PASSWORD"),
-            host=os.getenv("DB_HOST")
+            host=os.getenv("DB_HOST"),
         )
         cursor = conn.cursor()
     except Exception as e:
         logger.error(f"Error connecting to the database: {e}")
-        return 'create_postgres_tables'
-    
+        return "create_postgres_tables"
+
     tables_to_check = config.database.get("required_tables", [])
 
     for table in tables_to_check:
         # Check if the table exists
         cursor.execute(
-            sql.SQL("SELECT EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name = %s)"),
-            [table]
+            sql.SQL(
+                "SELECT EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name = %s)"
+            ),
+            [table],
         )
         result = cursor.fetchone()
         exists = result[0] if result else False
@@ -47,8 +50,8 @@ def check_db_tables_exist(**kwargs) -> str:
             logger.info(f"Table '{table}' does not exist. Need to create tables.")
             cursor.close()
             conn.close()
-            return 'create_postgres_tables'
+            return "create_postgres_tables"
 
     cursor.close()
     conn.close()
-    return 'skip_db_setup'
+    return "skip_db_setup"
