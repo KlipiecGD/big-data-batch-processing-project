@@ -27,12 +27,16 @@ Create a `.env` file in the project root. This file will handle your database cr
 
 ```bash
 # --- Database Configuration ---
-export DB_NAME=bigdata_db
-export DB_USER=your_username
-export DB_PASSWORD=your_password
-export DB_HOST=localhost
-export DB_PORT=5432
+DB_NAME=bigdata_db
+DB_USER=your_username
+DB_PASSWORD=your_password
+DB_HOST=localhost
+DB_PORT=5432
+```
 
+### 4. Create Consolidated `airflow.env` File
+
+```bash
 # --- Airflow Configuration ---
 # Sets Airflow home and DAGs folder to your current project directory
 export AIRFLOW_HOME=$(pwd)
@@ -54,14 +58,14 @@ export AIRFLOW_CONN_POSTGRES_DEFAULT='{
 
 ```
 
-*Note: The `.env` file is excluded from version control for security.*
+*Note: The `.env` and `airflow.env` files are excluded from version control for security.*
 
 ### 4. Load Environment and Initialize Airflow
 
 Every time you open a new terminal for this project, you must load the configuration. Then, initialize the Airflow metadata database:
 
 ```bash
-source .env
+source airflow.env
 airflow db migrate
 ```
 

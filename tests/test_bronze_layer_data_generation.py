@@ -1,7 +1,7 @@
 import pandas as pd
 
 from unittest.mock import patch
-from src.data_generation.generate_data import generate_transactions_dataset
+from src.data_generation.generate_bronze_layer_data import generate_transactions_dataset
 
 def test_data_generation(tmp_path):
     """
@@ -10,7 +10,7 @@ def test_data_generation(tmp_path):
     test_output_dir = tmp_path / "test_data"
     test_output_dir.mkdir()
 
-    with patch("src.data_generation.generate_data.data_path", str(test_output_dir)):
+    with patch("src.data_generation.generate_bronze_layer_data.data_path", str(test_output_dir)):
         generate_transactions_dataset(
             users_count=5, products_count=2, transactions_count=10
         )
@@ -50,7 +50,7 @@ def test_noise_injection(tmp_path):
     test_output_dir = tmp_path / "test_data_noise"
     test_output_dir.mkdir()
 
-    with patch("src.data_generation.generate_data.data_path", str(test_output_dir)):
+    with patch("src.data_generation.generate_bronze_layer_data.data_path", str(test_output_dir)):
         generate_transactions_dataset(
             users_count=100, products_count=50, transactions_count=200,
             noise_level=0.1, null_wrong_proportion=0.5

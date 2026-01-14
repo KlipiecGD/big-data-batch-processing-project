@@ -1,8 +1,5 @@
 import pytest
 from pyspark.sql import SparkSession
-from datetime import datetime, timedelta
-
-from src.batch_processing.batch_process import load_query
 from src.config.config import config
 
 
@@ -100,7 +97,8 @@ def test_top_spenders(spark_session, setup_mock_views) -> None:
     - Maria: 60 + 50 + 100 = 210.0
     - Sarah: 70 + 100 = 170.0
     """
-    query = load_query("top_spenders.sql")
+    with open("sql_queries/top_spenders.sql", "r") as f:
+        query = f.read()
     result_df = spark_session.sql(query)
     results = result_df.collect()
 
@@ -146,7 +144,8 @@ def test_top_products_by_category(spark_session, setup_mock_views) -> None:
     - Category 2: Product E (5 units), Product D (5 units), Product F (2 units), Product J (0 units)
     - Category 3: Product G (3 units), Product H (1 unit)
     """
-    query = load_query("top_products_by_category.sql")
+    with open("sql_queries/top_products_by_category.sql", "r") as f:
+        query = f.read()
     result_df = spark_session.sql(query)
     results = result_df.collect()
 
@@ -192,7 +191,8 @@ def test_sales_moving_average(spark_session, setup_mock_views) -> None:
     Verifies that moving averages are calculated correctly over 7-day windows.
     The MA divides the sum by the actual number of days in the window.
     """
-    query = load_query("sales_moving_average.sql")
+    with open("sql_queries/sales_moving_average.sql", "r") as f:
+        query = f.read()
     result_df = spark_session.sql(query)
     results = result_df.collect()
 
@@ -261,7 +261,8 @@ def test_performance_analysis_by_country(spark_session, setup_mock_views) -> Non
     - Germany: Anna (110.0) + Peter (90.0) = 200.0, 5 transactions, 2 users
     - France: Lucas (75.0), 2 transactions, 1 user
     """
-    query = load_query("performance_analysis_by_country.sql")
+    with open("sql_queries/performance_analysis_by_country.sql", "r") as f:
+        query = f.read()
     result_df = spark_session.sql(query)
     results = result_df.collect()
 
@@ -345,7 +346,8 @@ def test_day_to_day_sales(spark_session, setup_mock_views) -> None:
     Test to verify the day-to-day sales transformation.
     Verifies daily sales, previous day sales, and percent change calculations.
     """
-    query = load_query("day_to_day_sales.sql")
+    with open("sql_queries/day_to_day_sales.sql", "r") as f:
+        query = f.read()
     result_df = spark_session.sql(query)
     results = result_df.collect()
 

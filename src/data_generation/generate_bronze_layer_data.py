@@ -3,6 +3,7 @@ import os
 import numpy as np
 import pandas as pd
 from faker import Faker
+from typing import Optional
 
 from src.config.config import config
 from src.logging_utils.logger import logger
@@ -42,7 +43,7 @@ def inject_noise(
     for idx in indices_to_corrupt:
         col = random.choice(df_noisy.columns)
 
-        #
+        # Decide whether to set NULL or WRONG value
         if random.random() <= null_wrong_proportion:
             df_noisy.at[idx, col] = np.nan
         else:
@@ -56,8 +57,15 @@ def inject_noise(
                 df_noisy.at[idx, col] = fake.date_between(
                     start_date="-500y", end_date="-100y"
                 )  # Logical outlier
+            elif "_id" in col:
+                # For ID columns, use invalid integer values instead of empty strings
+                df_noisy.at[idx, col] = random.choice([-1, -99, 0])
+            elif pd.api.types.is_numeric_dtype(df_noisy[col]):
+                # For other numeric columns, use invalid numeric values
+                df_noisy.at[idx, col] = random.choice([-1, -99, 0])
             else:
-                df_noisy.at[idx, col] = ""  # Empty string
+                # Only use empty string for string/object columns
+                df_noisy.at[idx, col] = ""
 
     return df_noisy
 
@@ -95,8 +103,11 @@ def generate_transactions_dataset(
                 "signup_date": fake.date_between(start_date="-2y", end_date="-30d"),
             }
         )
+    # Store clean users for transaction generation
+    df_users_clean = pd.DataFrame(users)
+    
     # Inject noise and save users to CSV
-    df_users = inject_noise(pd.DataFrame(users), noise_level, null_wrong_proportion)
+    df_users = inject_noise(df_users_clean.copy(), noise_level, null_wrong_proportion)
     df_users.to_csv(os.path.join(data_path, "users.csv"), index=False)
     logger.info(f"Generated {len(users)} users. Saved to {data_path}users.csv")
 
@@ -133,7 +144,7 @@ def generate_transactions_dataset(
     transactions = []
 
     # Convert users DataFrame to list of dicts for easy access
-    users_list = df_users.to_dict(orient="records")
+    users_list = df_users_clean.to_dict(orient="records")
 
     for i in range(1, transactions_count + 1):
         selected_user = random.choice(users_list)

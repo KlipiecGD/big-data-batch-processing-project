@@ -1,10 +1,9 @@
 from airflow import DAG
-from airflow.providers.common.sql.operators.sql import SQLExecuteQueryOperator
+from airflow.sdk import Context
 from airflow.providers.standard.operators.python import (
-    PythonOperator,
-    BranchPythonOperator,
+    PythonOperator
 )
-from airflow.providers.standard.operators.empty import EmptyOperator
+
 from datetime import datetime
 import sys
 from pathlib import Path
@@ -14,10 +13,18 @@ project_root = str(Path(__file__).parents[3])
 if project_root not in sys.path:
     sys.path.append(project_root)
 
-from src.orchestration.check_db_tables_exist import check_db_tables_exist
-from src.data_generation.generate_data import generate_transactions_dataset
-from src.batch_processing.batch_process import run_batch_processing
+from src.data_generation.generate_bronze_layer_data import generate_transactions_dataset
+from src.batch_processing.process_silver_layer import run_silver_layer_transformations
+from src.batch_processing.process_gold_layer import run_gold_layer_creation
 from src.config.config import config
+
+def success_callback(context: Context) -> None:
+    """Callback function to be called on DAG success."""
+    
+
+def failure_callback(context: Context) -> None:
+    """Callback function to be called on DAG failure."""
+    
 
 with DAG(
     dag_id="big_data_batch_pipeline",
@@ -25,36 +32,34 @@ with DAG(
     schedule="@daily",
     catchup=False,
     template_searchpath=config.database.get("scripts_path", "database_creation/"),
+    description="Bigdata Medallion Architecture Batch Processing Pipeline",
+    tags=["bigdata", "batch", "medallion_architecture"],
+    on_success_callback=success_callback,
+    on_failure_callback=failure_callback,
 ) as dag:
-    # 1. Branching task to check if DB tables exist
-    branch_task = BranchPythonOperator(
-        task_id="check_db_tables_exists", python_callable=check_db_tables_exist
-    )
-
-    # 2. Task to create tables if they don't exist
-    create_tables_task = SQLExecuteQueryOperator(
-        task_id="create_postgres_tables",
-        conn_id="postgres_default",
-        sql="create_tables.sql",
-    )
-
-    # 3. Task to skip setup if tables exist
-    skip_setup_task = EmptyOperator(task_id="skip_db_setup")
-
-    # 4. Task to generate synthetic data
-    generate_data_task = PythonOperator(
-        task_id="generate_synthetic_data",
+    # 1. Generate Bronze Layer Data
+    generate_bronze_data = PythonOperator(
+        task_id="generate_bronze_data",
         python_callable=generate_transactions_dataset,
-        trigger_rule="none_failed_min_one_success",
+        retries=config.dag.get("retries", 2),
+        retry_delay=config.dag.get("retries_delay", 60),
     )
 
-    # 5. Task to run batch processing
-    run_batch_processing_task = PythonOperator(
-        task_id="run_batch_processing",
-        python_callable=run_batch_processing,
+    # 2. Process Silver Layer
+    process_silver_layer = PythonOperator(
+        task_id="process_silver_layer",
+        python_callable=run_silver_layer_transformations,
+        retries=config.dag.get("retries", 2),
+        retry_delay=config.dag.get("retries_delay", 60),
+    )
+
+    # 3. Process Gold Layer
+    process_gold_layer = PythonOperator(
+        task_id="process_gold_layer",
+        python_callable=run_gold_layer_creation,
+        retries=config.dag.get("retries", 2),
+        retry_delay=config.dag.get("retries_delay", 60),
     )
 
     # Define task dependencies
-    branch_task >> [create_tables_task, skip_setup_task]
-    [create_tables_task, skip_setup_task] >> generate_data_task
-    generate_data_task >> run_batch_processing_task
+    generate_bronze_data >> process_silver_layer >> process_gold_layer

@@ -1,5 +1,6 @@
 data_generation:
-  data_path: bronze_layer/
+  bronze_layer_path: bronze_layer/
+  silver_layer_path: silver_layer/
   users_count: 10000
   items_count: 10000
   transactions_count: 18000
@@ -11,6 +12,12 @@ queries:
   query_files: ['day_to_day_sales.sql', 'top_spenders.sql', 'performance_analysis_by_country.sql', 'sales_moving_average.sql', 'top_products_by_category.sql']
 
 database:
-  scripts_path: database_creation/
-  setup_script: database_creation/create_tables.sql
-  required_tables: ['users', 'products', 'transactions']
+  gold_layer_tables_schema: gold_layer/create_tables.sql
+  required_tables:
+    creation_order: ['users', 'products', 'transactions']
+    drop_order: ['transactions', 'products', 'users']
+
+dag:
+  retries: 2
+  retries_delay: 60
+  
