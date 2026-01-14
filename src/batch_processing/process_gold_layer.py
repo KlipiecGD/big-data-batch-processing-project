@@ -93,24 +93,39 @@ def run_gold_layer_creation() -> None:
         
         # Load transactions (large fact table)
         transactions = spark.read.parquet(os.path.join(silver_path, "transactions"))
+
         # Repartition for performance
         # For ~18,000 records, 4 partitions is sufficient
         transactions = transactions.repartition(4)
-        transactions.cache() # Cache for performance
+
+        # Cache for performance
+        transactions.cache() 
         transactions.createOrReplaceTempView("transactions")
-        logger.info(f"Transactions loaded: {transactions.count()} records")
+
+        # Count is an action that triggers computation - only for debugging
+        # logger.info(f"Transactions loaded: {transactions.count()} records")
         
         # Load users (dimension table)
         users = spark.read.parquet(os.path.join(silver_path, "users"))
-        users.cache() # Cache for performance
+
+        # Cache for performance
+        users.cache()
         users.createOrReplaceTempView("users")
-        logger.info(f"Users loaded: {users.count()} records")
-        
+
+        # Count is an action that triggers computation - only for debugging
+        # logger.info(f"Users loaded: {users.count()} records")
+
         # Load products (dimension table)
         products = spark.read.parquet(os.path.join(silver_path, "products"))
-        products.cache() # Cache for performance
+        
+        # Cache for performance
+        products.cache() 
         products.createOrReplaceTempView("products")
-        logger.info(f"Products loaded: {products.count()} records")
+
+        # Count is an action that triggers computation - only for debugging
+        # logger.info(f"Products loaded: {products.count()} records")
+
+        logger.info("Data loaded from silver layer successfully")
         
         # Process each query file
         query_files = config.queries.get("query_files", [])
@@ -169,27 +184,19 @@ def run_gold_layer_creation() -> None:
         raise
         
     finally:
-        # Clean up resources
+        # Safely unpersist if variables were actually assigned
+        for df_name in ['transactions', 'users', 'products']:
+            df = locals().get(df_name)
+            if df is not None:
+                try:
+                    df.unpersist()
+                    logger.info(f"Unpersisted {df_name}")
+                except Exception:
+                    pass
+
         if spark:
-            try:
-                transactions.unpersist()
-                users.unpersist()
-                products.unpersist()
-                logger.info("Spark dataframes unpersisted")
-            except:
-                pass
-            try:
-                spark.stop()
-                logger.info("Spark session stopped")
-            except:
-                pass
-        
-        if cur:
-            cur.close()
-        
-        if conn:
-            conn.close()
-            logger.info("Database connection closed")
+            spark.stop()
+            logger.info("Spark session stopped")
 
 
 if __name__ == "__main__":

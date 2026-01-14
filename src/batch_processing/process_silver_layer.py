@@ -51,14 +51,14 @@ def run_silver_layer_transformations() -> None:
             
             df = spark.read.csv(csv_path, header=True, inferSchema=True)
             
-            # Log record counts before and after cleaning
-            initial_count = df.count()
-            logger.info(f"Initial record count for {table}: {initial_count}")
+            # Log record counts before and after cleaning - action triggers computation - only for debugging
+            # initial_count = df.count()
+            # logger.info(f"Initial record count for {table}: {initial_count}")
             
             # Clean the data
             df = clean_data(df, table)
-            
-            # REFERENTIAL INTEGRITY: Filter transactions based on cleaned users and products
+
+            # Referential Integrity: Filter transactions based on cleaned users and products
             if table == "transactions":
                 if "users" in cleaned_dfs and "products" in cleaned_dfs:
                     # Get valid user_ids and product_ids
@@ -72,17 +72,10 @@ def run_silver_layer_transformations() -> None:
                     
                     logger.info(f"Applied referential integrity filters for transactions")
             
-            cleaned_count = df.count() # Count is an action that triggers computation, but we need to know how many records were removed
-            removed_count = initial_count - cleaned_count
-            logger.info(f"Cleaned record count for {table}: {cleaned_count} (removed {removed_count} records)")
-
-            # Repartition data for optimized storage
-            if cleaned_count > 10000:
-                num_partitions = max(4, cleaned_count // 5000)
-                df = df.repartition(num_partitions)
-            else:
-                df = df.coalesce(1)  # Small tables can be stored in a single file
-            logger.info(f"Repartitioned {table} to {df.rdd.getNumPartitions()} partitions")
+            # Count is an action that triggers computation - only for debugging
+            # cleaned_count = df.count() 
+            # removed_count = initial_count - cleaned_count
+            # logger.info(f"Cleaned record count for {table}: {cleaned_count} (removed {removed_count} records)")
 
             # Cache DataFrames that will be reused in referential integrity checks
             if table in ["users", "products"]:
@@ -102,7 +95,7 @@ def run_silver_layer_transformations() -> None:
             # Write cleaned DataFrame to Parquet - optimize by compression
             df.write.option("compression", "snappy").parquet(parquet_path, mode="overwrite")
             
-            logger.info(f"Successfully saved {cleaned_count} records to {parquet_path}")
+            logger.info(f"Successfully saved records to {parquet_path}")
         
         logger.info("Silver layer parquet generation completed successfully")
         
@@ -110,14 +103,19 @@ def run_silver_layer_transformations() -> None:
         logger.error(f"Silver layer parquet generation failed: {e}")
         raise e
     finally:
-        for table, df in cleaned_dfs.items():
-            if table in ["users", "products"]:
+        # Safely unpersist if the table exists and was cached
+        for table in ["users", "products"]:
+            df = cleaned_dfs.get(table)
+            if df is not None:
                 try:
                     df.unpersist()
                     logger.info(f"Unpersisted dataframe for table: {table}")
-                except:
-                    pass
-        spark.stop()
+                except Exception as e:
+                    logger.warning(f"Could not unpersist {table}: {e}")
+        
+        if 'spark' in locals() and spark:
+            spark.stop()
+            logger.info("Spark session stopped")
 
 
 if __name__ == "__main__":
