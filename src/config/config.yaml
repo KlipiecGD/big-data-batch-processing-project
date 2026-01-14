@@ -6,6 +6,10 @@ data_generation:
   transactions_count: 18000
   noise_level: 0.03
   null_wrong_proportion: 0.5
+  save_locally: true
+  save_to_cloud: true
+  save_to_bq: true
+  load_from_cloud: true
 
 queries:
   queries_path: sql_queries/
@@ -20,4 +24,3 @@ database:
 dag:
   retries: 2
   retries_delay: 60
-  

@@ -1,6 +1,7 @@
 import os
 import shutil
 from pyspark.sql import SparkSession
+from src.cloud_utils.save_to_bucket import save_files_to_bucket
 from src.config.config import config
 from src.logging_utils.logger import logger
 from src.batch_processing.clean_data import clean_data
@@ -9,47 +10,52 @@ from dotenv import load_dotenv
 load_dotenv()
 
 
-def run_silver_layer_transformations() -> None:
+def run_silver_layer_transformations(load_from_cloud: bool = config.data_generation.get("load_from_cloud", True), save_to_cloud: bool = config.data_generation.get("save_to_cloud", True), save_locally: bool = config.data_generation.get("save_locally", True)) -> None:
     """
     Ingest cleaned data from bronze layer CSV files and save to silver layer as Parquet files.
     
     Architecture:
-    - Read CSVs from bronze layer data directory
+    - Read CSVs from bronze layer data directory locally or from cloud storage
     - Clean data using Spark
-    - Save cleaned data as Parquet files in silver layer directory
+    - Save cleaned data as Parquet files in silver layer directory locally or to cloud storage
+    Args:
+        load_from_cloud (bool): Whether to load the bronze layer files from cloud storage. If False, load from local storage.
+        save_to_cloud (bool): Whether to save the silver layer files to cloud storage
+        save_locally (bool): Whether to save the silver layer files locally
     """
     spark = SparkSession.builder.appName("SilverLayerTransformations") \
+        .config("spark.jars.packages", "com.google.cloud.bigdataoss:gcs-connector:hadoop3-2.2.5") \
+        .config("spark.hadoop.fs.gs.impl", "com.google.cloud.hadoop.fs.gcs.GoogleHadoopFileSystem") \
+        .config("spark.hadoop.google.cloud.auth.service.account.enable", "true") \
+        .config("spark.hadoop.google.cloud.auth.service.account.json.keyfile", os.getenv("GOOGLE_APPLICATION_CREDENTIALS")) \
         .config("spark.sql.shuffle.partitions", "8") \
         .getOrCreate()
 
-    # Get table order for processing
     ingestion_order = config.required_tables.get("creation_order", [])
-    
-    # Define paths
-    bronze_path = config.data_generation.get("bronze_layer_path", "bronze_layer/")
-    silver_path = config.data_generation.get("silver_layer_path", "silver_layer/")
-    
-    # Create silver_layer directory if it doesn't exist
-    if not os.path.exists(silver_path):
-        os.makedirs(silver_path)
+    bucket_name = os.getenv("GCS_BUCKET_NAME")
 
-    logger.info("Starting silver layer parquet files generation...")
+    # Define base paths
+    local_bronze = config.data_generation.get("bronze_layer_path", "bronze_layer/")
+    local_silver = config.data_generation.get("silver_layer_path", "silver_layer/")
+    cloud_bronze = f"gs://{bucket_name}/bronze_layer"
+    cloud_silver = f"gs://{bucket_name}/silver_layer"
 
-    # Store cleaned dataframes for referential integrity checks
+    logger.info("Starting silver layer transformations...")
+
     cleaned_dfs = {}
     
     try:
         for table in ingestion_order:
             logger.info(f"Processing table: {table}")
             
-            # Read CSV from bronze layer
-            csv_path = os.path.join(bronze_path, f"{table}.csv")
+            # 2. Dynamic Input Path: Cloud vs Local
+            if load_from_cloud:
+                input_path = f"{cloud_bronze}/{table}.csv"
+            else:
+                input_path = os.path.join(local_bronze, f"{table}.csv")
             
-            if not os.path.exists(csv_path):
-                logger.error(f"CSV file not found: {csv_path}")
-                raise FileNotFoundError(f"Missing bronze layer file: {csv_path}")
-            
-            df = spark.read.csv(csv_path, header=True, inferSchema=True)
+            # Read CSV using Spark
+            df = spark.read.csv(input_path, header=True, inferSchema=True)
             
             # Log record counts before and after cleaning - action triggers computation - only for debugging
             # initial_count = df.count()
@@ -85,20 +91,22 @@ def run_silver_layer_transformations() -> None:
             # Store cleaned dataframe for referential integrity checks
             cleaned_dfs[table] = df
             
-            # Save to Parquet in silver_layer/
-            parquet_path = os.path.join(silver_path, table)
-            
-            # Remove existing parquet directory if it exists
-            if os.path.exists(parquet_path):
-                shutil.rmtree(parquet_path)
-            
-            # Write cleaned DataFrame to Parquet - optimize by compression
-            df.write.option("compression", "snappy").parquet(parquet_path, mode="overwrite")
-            
-            logger.info(f"Successfully saved records to {parquet_path}")
+            # Dynamic Output: Save Locally
+            if save_locally:
+                local_output = os.path.join(local_silver, table)
+                if os.path.exists(local_output):
+                    shutil.rmtree(local_output)
+                df.write.option("compression", "snappy").parquet(local_output, mode="overwrite")
+                logger.info(f"Saved locally to {local_output}")
+
+            # Dynamic Output: Save to Cloud Directly
+            if save_to_cloud:
+                cloud_output = f"{cloud_silver}/{table}"
+                df.write.option("compression", "snappy").parquet(cloud_output, mode="overwrite")
+                logger.info(f"Saved to cloud at {cloud_output}")
         
-        logger.info("Silver layer parquet generation completed successfully")
-        
+        logger.info("Silver layer processing completed successfully")
+
     except Exception as e:
         logger.error(f"Silver layer parquet generation failed: {e}")
         raise e

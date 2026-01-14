@@ -26,3 +26,6 @@ gold_layer/
 # pytest
 .pytest_cache/
 .pytest_cache/*
+
+# google credentials
+*.json

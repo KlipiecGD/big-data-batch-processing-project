@@ -12,7 +12,8 @@ def test_data_generation(tmp_path):
 
     with patch("src.data_generation.generate_bronze_layer_data.data_path", str(test_output_dir)):
         generate_transactions_dataset(
-            users_count=5, products_count=2, transactions_count=10
+            users_count=5, products_count=2, transactions_count=10,
+            save_to_cloud=False
         )
 
         # Verify file creation

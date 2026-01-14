@@ -2,19 +2,19 @@ import random
 import os
 import numpy as np
 import pandas as pd
+from dotenv import load_dotenv
 from faker import Faker
 from typing import Optional
 
+from src.cloud_utils.upload_df_to_gcs import upload_dataframe_to_gcs
 from src.config.config import config
 from src.logging_utils.logger import logger
+
+load_dotenv()
 
 fake = Faker()
 # If we want to ensure reproducibility
 # fake.seed_instance(2137)
-
-data_path = config.data_generation.get("data_path", "bronze_layer/")
-if not os.path.exists(data_path):
-    os.makedirs(data_path)
 
 
 def inject_noise(
@@ -76,8 +76,9 @@ def generate_transactions_dataset(
     transactions_count: int = config.data_generation.get("transactions_count", 18000),
     noise_level: float = config.data_generation.get("noise_level", 0.03),
     null_wrong_proportion: float = config.data_generation.get(
-        "null_wrong_proportion", 0.5
-    ),
+        "null_wrong_proportion", 0.5),
+    save_locally: Optional[bool] = config.data_generation.get("save_locally", True),
+    save_to_cloud: Optional[bool] = config.data_generation.get("save_to_cloud", True),
 ) -> None:
     """Generate a synthetic transactions dataset and save it as a CSV files.
 
@@ -87,6 +88,7 @@ def generate_transactions_dataset(
         transactions_count (int): Number of transactions to generate
         noise_level (float): Proportion of entries to corrupt with noise
         null_wrong_proportion (float): Proportion of corrupted entries to set to null vs. wrong values
+        save_to_cloud (bool): Whether to save the generated files to cloud storage
     """
     logger.info("Generating synthetic transactions dataset...")
     # Generate users
@@ -108,8 +110,7 @@ def generate_transactions_dataset(
     
     # Inject noise and save users to CSV
     df_users = inject_noise(df_users_clean.copy(), noise_level, null_wrong_proportion)
-    df_users.to_csv(os.path.join(data_path, "users.csv"), index=False)
-    logger.info(f"Generated {len(users)} users. Saved to {data_path}users.csv")
+    logger.info(f"Generated {len(users)} users.")
 
     # Generate products
     logger.info("Generating products...")
@@ -136,8 +137,7 @@ def generate_transactions_dataset(
         )
     # Inject noise and save products to CSV
     df_products = inject_noise(pd.DataFrame(products), noise_level, null_wrong_proportion)
-    df_products.to_csv(os.path.join(data_path, "products.csv"), index=False)
-    logger.info(f"Generated {len(products)} products. Saved to {data_path}products.csv")
+    logger.info(f"Generated {len(products)} products.")
 
     # Generate transactions
     logger.info("Generating transactions...")
@@ -165,11 +165,35 @@ def generate_transactions_dataset(
         )
     # Inject noise and save transactions to CSV
     df_transactions = inject_noise(pd.DataFrame(transactions), noise_level, null_wrong_proportion)
-    df_transactions.to_csv(os.path.join(data_path, "transactions.csv"), index=False)
     logger.info(
-        f"Generated {len(transactions)} transactions. Saved to {data_path}transactions.csv"
+        f"Generated {len(transactions)} transactions."
     )
+    if save_locally:
+        data_path = config.data_generation.get("data_path", "bronze_layer/")
+        if not os.path.exists(data_path):
+            os.makedirs(data_path)
+        logger.info("Saving generated files locally...")
+        df_users.to_csv(os.path.join(data_path, "users.csv"), index=False)
+        logger.info(f"Saved users to {data_path}users.csv")
+        df_products.to_csv(os.path.join(data_path, "products.csv"), index=False)
+        logger.info(f"Saved products to {data_path}products.csv")
+        df_transactions.to_csv(os.path.join(data_path, "transactions.csv"), index=False)
+        logger.info(f"Saved transactions to {data_path}transactions.csv")
 
+    if save_to_cloud:
+        try:
+            logger.info("Saving dataframes to GCS...")
+            dfs = {
+                "users.csv": df_users,
+                "products.csv": df_products,
+                "transactions.csv": df_transactions,
+            }
+
+            for filename, df in dfs.items():
+                upload_dataframe_to_gcs(df, os.getenv("GCS_BUCKET_NAME", "bucket_name"), f"bronze_layer/{filename}")
+
+        except Exception as e:
+            logger.error(f"Failed to save generated files to cloud storage: {e}")
 
 if __name__ == "__main__":
     generate_transactions_dataset()

@@ -1,95 +1,52 @@
 import os
-import psycopg2
 from dotenv import load_dotenv
 from pyspark.sql import SparkSession
 from src.config.config import config
 from src.logging_utils.logger import logger
+from src.cloud_utils.check_dataset_exists import ensure_dataset_exists
 
 load_dotenv()
 
-def create_gold_schema_and_tables(cur: psycopg2.extensions.cursor, conn: psycopg2.extensions.connection) -> None:
+def run_gold_layer_creation(load_from_cloud: bool = config.data_generation.get("load_from_cloud", True)) -> None:
     """
-    Create gold schema and tables in PostgreSQL based on SQL script.
-    
-    Args:
-        cur: psycopg2 cursor
-        conn: psycopg2 connection
-    """
-    try:
-        gold_schema_script_path = config.database.get("gold_layer_tables_schema", "gold_layer/create_tables.sql")
-        
-        if not os.path.exists(gold_schema_script_path):
-            logger.error(f"Gold schema SQL script not found: {gold_schema_script_path}")
-            raise FileNotFoundError(f"Missing gold schema script: {gold_schema_script_path}")
-        
-        with open(gold_schema_script_path, "r") as f:
-            sql_script = f.read()
-        
-        # Execute the SQL script to create schema and tables if not exist
-        logger.info("Creating gold schema and tables...")
-        cur.execute(sql_script)
-        conn.commit()
-        logger.info("Gold schema and tables created successfully")
-        
-    except Exception as e:
-        logger.error(f"Failed to create gold schema and tables: {e}")
-        if conn:
-            conn.rollback()
-        raise
-
-
-def run_gold_layer_creation() -> None:
-    """
-    Transform silver layer parquet files into gold layer analytical tables in PostgreSQL.
+    Transform silver layer parquet files into gold layer analytical tables in BigQuery.
     
     Architecture:
-    - Read cleaned data from silver layer Parquet files
+    - Read cleaned data from silver layer Parquet files stored locally or in cloud storage
     - Perform Spark SQL transformations (aggregations, joins, window functions)
-    - Write results to PostgreSQL gold schema tables
+    - Write results to BigQuery tables in the gold layer dataset
+
+    Args:
+        load_from_cloud (bool): Whether to load the silver layer files from cloud storage. If False, load from local storage.
     """
     spark = None
-    conn = None
-    cur = None
     
     try:
         logger.info("Starting gold layer transformation...")
         
         # Initialize Spark Session
         spark = SparkSession.builder \
-            .appName("GoldLayerCreation") \
-            .config("spark.jars.packages", "org.postgresql:postgresql:42.7.1") \
+            .appName("GoldLayerToBigQuery") \
+            .config("spark.jars.packages", (
+                "com.google.cloud.spark:spark-bigquery-with-dependencies_2.13:0.43.1,"
+                "com.google.cloud.bigdataoss:gcs-connector:hadoop3-2.2.5"
+            )) \
+            .config("spark.hadoop.fs.gs.impl", "com.google.cloud.hadoop.fs.gcs.GoogleHadoopFileSystem") \
+            .config("spark.hadoop.google.cloud.auth.service.account.enable", "true") \
+            .config("spark.hadoop.google.cloud.auth.service.account.json.keyfile", os.getenv("GOOGLE_APPLICATION_CREDENTIALS")) \
             .config("spark.sql.shuffle.partitions", "8") \
-            .getOrCreate() # Optimize for smaller datasets
+            .getOrCreate()
         
-        # JDBC Configuration
-        db_url = f"jdbc:postgresql://{os.getenv('DB_HOST')}:{os.getenv('DB_PORT')}/{os.getenv('DB_NAME')}"
-        db_props = {
-            "user": os.getenv("DB_USER"),
-            "password": os.getenv("DB_PASSWORD"),
-            "driver": "org.postgresql.Driver"
-        }
-        
-        # Connect to PostgreSQL for schema/table management
-        logger.info("Connecting to PostgreSQL...")
-        conn = psycopg2.connect(
-            host=os.getenv('DB_HOST'),
-            database=os.getenv('DB_NAME'),
-            user=os.getenv('DB_USER'),
-            password=os.getenv('DB_PASSWORD'),
-            port=os.getenv('DB_PORT')
-        )
-        cur = conn.cursor()
-        
-        # Create gold schema and table definitions
-        logger.info("Creating gold schema and table definitions...")
-        create_gold_schema_and_tables(cur, conn)
-        logger.info("Gold schema and tables ready")
-        
-        # Define silver layer path
-        silver_path = config.data_generation.get("silver_layer_path", "silver_layer/")
+        # Dynamic path definition based on load source
+        if load_from_cloud:
+            silver_path = f"gs://{os.getenv('GCS_BUCKET_NAME')}/silver_layer/"
+            logger.info("Loading silver layer data from Cloud Storage bucket")
+        else:
+            silver_path = config.data_generation.get("silver_layer_path", "silver_layer/")
+            logger.info("Loading silver layer data from local storage")
         
         # Load data from Parquet files
-        logger.info("Loading data from silver layer Parquet files...")
+        logger.info("Loading and caching silver layer Parquet files...")
         
         # Load transactions (large fact table)
         transactions = spark.read.parquet(os.path.join(silver_path, "transactions"))
@@ -126,6 +83,8 @@ def run_gold_layer_creation() -> None:
         # logger.info(f"Products loaded: {products.count()} records")
 
         logger.info("Data loaded from silver layer successfully")
+        bq_dataset = os.getenv('BQ_GOLD_LAYER_DATASET', 'gold_layer')
+        project_id = os.getenv('GCP_PROJECT_ID')
         
         # Process each query file
         query_files = config.queries.get("query_files", [])
@@ -145,12 +104,6 @@ def run_gold_layer_creation() -> None:
                     query_sql = f.read()
                 
                 report_name = query_file.split('.')[0]
-                gold_table = f"gold.{report_name}"
-                
-                # Truncate existing data (preserve table schema)
-                logger.info(f"Truncating table {gold_table}...")
-                cur.execute(f"TRUNCATE TABLE {gold_table};")
-                conn.commit()
                 
                 # Execute Spark SQL transformation
                 logger.info(f"Executing Spark SQL transformation for {report_name}...")
@@ -159,22 +112,24 @@ def run_gold_layer_creation() -> None:
                 # Result tables are smaller - use coalesce to reduce partitions
                 result_df = result_df.coalesce(1)
                 
-                # Append to gold table in PostgreSQL (table already exists with schema)
-                logger.info(f"Writing results to {gold_table}...")
-                result_df.write.jdbc(
-                    url=db_url,
-                    table=gold_table,
-                    mode="append",  # Append mode to preserve schema
-                    properties=db_props
-                )
-                
-                logger.info(f"Successfully created gold table {gold_table}")
+                try:
+                    logger.info(f"Saving {report_name} to BigQuery...")
+                    # Ensure dataset exists
+                    ensure_dataset_exists(bq_dataset)
+                    result_df.write \
+                        .format("bigquery") \
+                        .option("table", f"{project_id}.{bq_dataset}.{report_name}") \
+                        .option("temporaryGcsBucket", os.getenv("GCS_BUCKET_NAME")) \
+                        .mode("overwrite") \
+                        .save()
+                    logger.info(f"Successfully saved {report_name} to BigQuery")
+                except Exception as e:
+                    logger.error(f"Failed to save {report_name} to BigQuery: {e}")
+                    raise e
                 
             except Exception as e:
                 logger.error(f"Failed to process {query_file}: {e}")
-                if conn:
-                    conn.rollback()
-                raise
+                raise e
         
         logger.info("Gold layer transformation completed successfully")
         logger.info("Gold tables are ready for analytical queries")
