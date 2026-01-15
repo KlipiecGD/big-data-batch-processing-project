@@ -132,7 +132,7 @@ def run_gold_layer_creation(
                     logger.info(f"Saving {report_name} to BigQuery...")
                     result_df.write.format("bigquery").option(
                         "table", f"{project_id}.{bq_dataset}.{report_name}"
-                    ).option("temporaryGcsBucket", os.getenv("GCS_BUCKET_NAME")).mode(
+                    ).option("temporaryGcsBucket", config.cloud.get("gcs_bucket_name")).mode(
                         "overwrite"
                     ).save()
                     logger.info(f"Successfully saved {report_name} to BigQuery")
