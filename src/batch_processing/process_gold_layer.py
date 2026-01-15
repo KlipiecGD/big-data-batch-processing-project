@@ -7,10 +7,13 @@ from src.cloud_utils.check_dataset_exists import ensure_dataset_exists
 
 load_dotenv()
 
-def run_gold_layer_creation(load_from_cloud: bool = config.data_generation.get("load_from_cloud", True)) -> None:
+
+def run_gold_layer_creation(
+    load_from_cloud: bool = config.data_generation.get("load_from_cloud", True),
+) -> None:
     """
     Transform silver layer parquet files into gold layer analytical tables in BigQuery.
-    
+
     Architecture:
     - Read cleaned data from silver layer Parquet files stored locally or in cloud storage
     - Perform Spark SQL transformations (aggregations, joins, window functions)
@@ -20,34 +23,46 @@ def run_gold_layer_creation(load_from_cloud: bool = config.data_generation.get("
         load_from_cloud (bool): Whether to load the silver layer files from cloud storage. If False, load from local storage.
     """
     spark = None
-    
+
     try:
         logger.info("Starting gold layer transformation...")
-        
+
         # Initialize Spark Session
-        spark = SparkSession.builder \
-            .appName("GoldLayerToBigQuery") \
-            .config("spark.jars.packages", (
-                "com.google.cloud.spark:spark-bigquery-with-dependencies_2.13:0.43.1,"
-                "com.google.cloud.bigdataoss:gcs-connector:hadoop3-2.2.5"
-            )) \
-            .config("spark.hadoop.fs.gs.impl", "com.google.cloud.hadoop.fs.gcs.GoogleHadoopFileSystem") \
-            .config("spark.hadoop.google.cloud.auth.service.account.enable", "true") \
-            .config("spark.hadoop.google.cloud.auth.service.account.json.keyfile", os.getenv("GOOGLE_APPLICATION_CREDENTIALS")) \
-            .config("spark.sql.shuffle.partitions", "8") \
+        spark = (
+            SparkSession.builder.appName("GoldLayerToBigQuery")
+            .config(
+                "spark.jars.packages",
+                (
+                    "com.google.cloud.spark:spark-bigquery-with-dependencies_2.13:0.43.1,"
+                    "com.google.cloud.bigdataoss:gcs-connector:hadoop3-2.2.5"
+                ),
+            )
+            .config(
+                "spark.hadoop.fs.gs.impl",
+                "com.google.cloud.hadoop.fs.gcs.GoogleHadoopFileSystem",
+            )
+            .config("spark.hadoop.google.cloud.auth.service.account.enable", "true")
+            .config(
+                "spark.hadoop.google.cloud.auth.service.account.json.keyfile",
+                os.getenv("GOOGLE_APPLICATION_CREDENTIALS"),
+            )
+            .config("spark.sql.shuffle.partitions", "8")
             .getOrCreate()
-        
+        )
+
         # Dynamic path definition based on load source
         if load_from_cloud:
             silver_path = f"gs://{os.getenv('GCS_BUCKET_NAME')}/silver_layer/"
             logger.info("Loading silver layer data from Cloud Storage bucket")
         else:
-            silver_path = config.data_generation.get("silver_layer_path", "silver_layer/")
+            silver_path = config.data_generation.get(
+                "silver_layer_path", "silver_layer/"
+            )
             logger.info("Loading silver layer data from local storage")
-        
+
         # Load data from Parquet files
         logger.info("Loading and caching silver layer Parquet files...")
-        
+
         # Load transactions (large fact table)
         transactions = spark.read.parquet(os.path.join(silver_path, "transactions"))
 
@@ -56,12 +71,12 @@ def run_gold_layer_creation(load_from_cloud: bool = config.data_generation.get("
         transactions = transactions.repartition(4)
 
         # Cache for performance
-        transactions.cache() 
+        transactions.cache()
         transactions.createOrReplaceTempView("transactions")
 
         # Count is an action that triggers computation - only for debugging
         # logger.info(f"Transactions loaded: {transactions.count()} records")
-        
+
         # Load users (dimension table)
         users = spark.read.parquet(os.path.join(silver_path, "users"))
 
@@ -74,73 +89,74 @@ def run_gold_layer_creation(load_from_cloud: bool = config.data_generation.get("
 
         # Load products (dimension table)
         products = spark.read.parquet(os.path.join(silver_path, "products"))
-        
+
         # Cache for performance
-        products.cache() 
+        products.cache()
         products.createOrReplaceTempView("products")
 
         # Count is an action that triggers computation - only for debugging
         # logger.info(f"Products loaded: {products.count()} records")
 
         logger.info("Data loaded from silver layer successfully")
-        bq_dataset = os.getenv('BQ_GOLD_LAYER_DATASET', 'gold_layer')
-        project_id = os.getenv('GCP_PROJECT_ID')
-        
+
+        # Get BigQuery dataset name and ensure it exists
+        bq_dataset = os.getenv("BQ_GOLD_LAYER_DATASET", "gold_layer")
+        ensure_dataset_exists(bq_dataset)
+
+        # Get GCP project ID
+        project_id = os.getenv("GCP_PROJECT_ID")
+
         # Process each query file
         query_files = config.queries.get("query_files", [])
         logger.info(f"Processing {len(query_files)} gold layer transformations...")
-        
+
         for query_file in query_files:
             try:
                 logger.info(f"Processing query: {query_file}")
-                
+
                 # Read SQL query
                 query_path = os.path.join("sql_queries", query_file)
                 if not os.path.exists(query_path):
                     logger.error(f"Query file not found: {query_path}")
                     continue
-                
+
                 with open(query_path, "r") as f:
                     query_sql = f.read()
-                
-                report_name = query_file.split('.')[0]
-                
+
+                report_name = query_file.split(".")[0]
+
                 # Execute Spark SQL transformation
                 logger.info(f"Executing Spark SQL transformation for {report_name}...")
                 result_df = spark.sql(query_sql)
-                
+
                 # Result tables are smaller - use coalesce to reduce partitions
                 result_df = result_df.coalesce(1)
-                
+
                 try:
                     logger.info(f"Saving {report_name} to BigQuery...")
-                    # Ensure dataset exists
-                    ensure_dataset_exists(bq_dataset)
-                    result_df.write \
-                        .format("bigquery") \
-                        .option("table", f"{project_id}.{bq_dataset}.{report_name}") \
-                        .option("temporaryGcsBucket", os.getenv("GCS_BUCKET_NAME")) \
-                        .mode("overwrite") \
-                        .save()
+                    result_df.write.format("bigquery").option(
+                        "table", f"{project_id}.{bq_dataset}.{report_name}"
+                    ).option("temporaryGcsBucket", os.getenv("GCS_BUCKET_NAME")).mode(
+                        "overwrite"
+                    ).save()
                     logger.info(f"Successfully saved {report_name} to BigQuery")
                 except Exception as e:
                     logger.error(f"Failed to save {report_name} to BigQuery: {e}")
                     raise e
-                
+
             except Exception as e:
                 logger.error(f"Failed to process {query_file}: {e}")
                 raise e
-        
+
         logger.info("Gold layer transformation completed successfully")
-        logger.info("Gold tables are ready for analytical queries")
-        
+
     except Exception as e:
         logger.error(f"Gold layer transformation failed: {e}")
         raise
-        
+
     finally:
         # Safely unpersist if variables were actually assigned
-        for df_name in ['transactions', 'users', 'products']:
+        for df_name in ["transactions", "users", "products"]:
             df = locals().get(df_name)
             if df is not None:
                 try:

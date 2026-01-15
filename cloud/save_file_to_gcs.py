@@ -8,4 +8,6 @@ storage_client = storage.Client()
 bucket = storage_client.bucket("big-data-project-bucket-123456")
 
 blob = bucket.blob("bronze_layer/sample_file.txt")
-blob.upload_from_filename("/Users/klipiec/Desktop/Internship/projects/BigDataProject/cloud/sample_file.txt")
+blob.upload_from_filename(
+    "/Users/klipiec/Desktop/Internship/projects/BigDataProject/cloud/sample_file.txt"
+)

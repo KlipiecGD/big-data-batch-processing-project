@@ -1,6 +1,7 @@
 from src.config.config import config
 
-def test_config_tables_loading():
+
+def test_config_tables_loading() -> None:
     """
     Test to ensure that the required tables are loaded from the config.
     """
@@ -11,13 +12,10 @@ def test_config_tables_loading():
     assert "transactions" in tables, (
         "'transactions' table should be in the required tables."
     )
-    assert "products" in tables, (
-        "'products' table should be in the required tables."
-    )
+    assert "products" in tables, "'products' table should be in the required tables."
     assert tables.index("users") < tables.index("transactions"), (
         "'users' table should be processed before 'transactions' table."
     )
     assert tables.index("products") < tables.index("transactions"), (
         "'products' table should be processed before 'transactions' table."
     )
-

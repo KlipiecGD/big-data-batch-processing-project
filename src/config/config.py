@@ -67,7 +67,7 @@ class Config:
     def database(self) -> dict:
         """Get database configuration."""
         return self._config.get("database", {})
-    
+
     @property
     def required_tables(self) -> dict:
         """Get required tables configuration."""
@@ -77,6 +77,11 @@ class Config:
     def dag(self) -> dict:
         """Get DAG configuration."""
         return self._config.get("dag", {})
+
+    @property
+    def cloud(self) -> dict:
+        """Get cloud configuration."""
+        return self._config.get("cloud", {})
 
 
 config = Config()

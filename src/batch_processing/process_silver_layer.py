@@ -1,7 +1,6 @@
 import os
 import shutil
 from pyspark.sql import SparkSession
-from src.cloud_utils.save_to_bucket import save_files_to_bucket
 from src.config.config import config
 from src.logging_utils.logger import logger
 from src.batch_processing.clean_data import clean_data
@@ -10,12 +9,16 @@ from dotenv import load_dotenv
 load_dotenv()
 
 
-def run_silver_layer_transformations(load_from_cloud: bool = config.data_generation.get("load_from_cloud", True), save_to_cloud: bool = config.data_generation.get("save_to_cloud", True), save_locally: bool = config.data_generation.get("save_locally", True)) -> None:
+def run_silver_layer_transformations(
+    load_from_cloud: bool = config.data_generation.get("load_from_cloud", True),
+    save_to_cloud: bool = config.data_generation.get("save_to_cloud", True),
+    save_locally: bool = config.data_generation.get("save_locally", False),
+) -> None:
     """
-    Ingest cleaned data from bronze layer CSV files and save to silver layer as Parquet files.
-    
+    Ingest cleaned data from bronze layer CSV files stored locally or in cloud storage and save to silver layer as Parquet files.
+
     Architecture:
-    - Read CSVs from bronze layer data directory locally or from cloud storage
+    - Read CSVs from bronze layer data directory or from cloud storage
     - Clean data using Spark
     - Save cleaned data as Parquet files in silver layer directory locally or to cloud storage
     Args:
@@ -23,13 +26,24 @@ def run_silver_layer_transformations(load_from_cloud: bool = config.data_generat
         save_to_cloud (bool): Whether to save the silver layer files to cloud storage
         save_locally (bool): Whether to save the silver layer files locally
     """
-    spark = SparkSession.builder.appName("SilverLayerTransformations") \
-        .config("spark.jars.packages", "com.google.cloud.bigdataoss:gcs-connector:hadoop3-2.2.5") \
-        .config("spark.hadoop.fs.gs.impl", "com.google.cloud.hadoop.fs.gcs.GoogleHadoopFileSystem") \
-        .config("spark.hadoop.google.cloud.auth.service.account.enable", "true") \
-        .config("spark.hadoop.google.cloud.auth.service.account.json.keyfile", os.getenv("GOOGLE_APPLICATION_CREDENTIALS")) \
-        .config("spark.sql.shuffle.partitions", "8") \
+    spark = (
+        SparkSession.builder.appName("SilverLayerTransformations")
+        .config(
+            "spark.jars.packages",
+            "com.google.cloud.bigdataoss:gcs-connector:hadoop3-2.2.5",
+        )
+        .config(
+            "spark.hadoop.fs.gs.impl",
+            "com.google.cloud.hadoop.fs.gcs.GoogleHadoopFileSystem",
+        )
+        .config("spark.hadoop.google.cloud.auth.service.account.enable", "true")
+        .config(
+            "spark.hadoop.google.cloud.auth.service.account.json.keyfile",
+            os.getenv("GOOGLE_APPLICATION_CREDENTIALS"), # We need to pass path to GCP credentials JSON
+        )
+        .config("spark.sql.shuffle.partitions", "8")
         .getOrCreate()
+    )
 
     ingestion_order = config.required_tables.get("creation_order", [])
     bucket_name = os.getenv("GCS_BUCKET_NAME")
@@ -43,24 +57,24 @@ def run_silver_layer_transformations(load_from_cloud: bool = config.data_generat
     logger.info("Starting silver layer transformations...")
 
     cleaned_dfs = {}
-    
+
     try:
         for table in ingestion_order:
             logger.info(f"Processing table: {table}")
-            
-            # 2. Dynamic Input Path: Cloud vs Local
+
+            # Dynamic Input Path: Cloud vs Local
             if load_from_cloud:
                 input_path = f"{cloud_bronze}/{table}.csv"
             else:
                 input_path = os.path.join(local_bronze, f"{table}.csv")
-            
+
             # Read CSV using Spark
             df = spark.read.csv(input_path, header=True, inferSchema=True)
-            
+
             # Log record counts before and after cleaning - action triggers computation - only for debugging
             # initial_count = df.count()
             # logger.info(f"Initial record count for {table}: {initial_count}")
-            
+
             # Clean the data
             df = clean_data(df, table)
 
@@ -69,17 +83,21 @@ def run_silver_layer_transformations(load_from_cloud: bool = config.data_generat
                 if "users" in cleaned_dfs and "products" in cleaned_dfs:
                     # Get valid user_ids and product_ids
                     valid_user_ids = cleaned_dfs["users"].select("user_id").distinct()
-                    valid_product_ids = cleaned_dfs["products"].select("product_id").distinct()
-                    
+                    valid_product_ids = (
+                        cleaned_dfs["products"].select("product_id").distinct()
+                    )
+
                     # Filter transactions to keep only those with valid foreign keys
                     # Small tables are automatically broadcasted by Spark
                     df = df.join(valid_user_ids, on="user_id", how="inner")
                     df = df.join(valid_product_ids, on="product_id", how="inner")
-                    
-                    logger.info(f"Applied referential integrity filters for transactions")
-            
+
+                    logger.info(
+                        f"Applied referential integrity filters for transactions"
+                    )
+
             # Count is an action that triggers computation - only for debugging
-            # cleaned_count = df.count() 
+            # cleaned_count = df.count()
             # removed_count = initial_count - cleaned_count
             # logger.info(f"Cleaned record count for {table}: {cleaned_count} (removed {removed_count} records)")
 
@@ -90,21 +108,28 @@ def run_silver_layer_transformations(load_from_cloud: bool = config.data_generat
 
             # Store cleaned dataframe for referential integrity checks
             cleaned_dfs[table] = df
-            
+
             # Dynamic Output: Save Locally
             if save_locally:
                 local_output = os.path.join(local_silver, table)
+                # Remove existing directory if it exists
                 if os.path.exists(local_output):
                     shutil.rmtree(local_output)
-                df.write.option("compression", "snappy").parquet(local_output, mode="overwrite")
+                # Save as Parquet with Snappy compression
+                df.write.option("compression", "snappy").parquet(
+                    local_output, mode="overwrite"
+                )
                 logger.info(f"Saved locally to {local_output}")
 
             # Dynamic Output: Save to Cloud Directly
             if save_to_cloud:
                 cloud_output = f"{cloud_silver}/{table}"
-                df.write.option("compression", "snappy").parquet(cloud_output, mode="overwrite")
+                # Save as Parquet with Snappy compression
+                df.write.option("compression", "snappy").parquet(
+                    cloud_output, mode="overwrite"
+                )
                 logger.info(f"Saved to cloud at {cloud_output}")
-        
+
         logger.info("Silver layer processing completed successfully")
 
     except Exception as e:
@@ -120,8 +145,8 @@ def run_silver_layer_transformations(load_from_cloud: bool = config.data_generat
                     logger.info(f"Unpersisted dataframe for table: {table}")
                 except Exception as e:
                     logger.warning(f"Could not unpersist {table}: {e}")
-        
-        if 'spark' in locals() and spark:
+
+        if "spark" in locals() and spark:
             spark.stop()
             logger.info("Spark session stopped")
 

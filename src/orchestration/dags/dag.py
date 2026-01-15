@@ -1,8 +1,6 @@
 from airflow import DAG
 from airflow.sdk import Context
-from airflow.providers.standard.operators.python import (
-    PythonOperator
-)
+from airflow.providers.standard.operators.python import PythonOperator
 
 from datetime import datetime
 import sys
@@ -18,20 +16,20 @@ from src.batch_processing.process_silver_layer import run_silver_layer_transform
 from src.batch_processing.process_gold_layer import run_gold_layer_creation
 from src.config.config import config
 
+
 def success_callback(context: Context) -> None:
     """Callback function to be called on DAG success."""
-    
+
 
 def failure_callback(context: Context) -> None:
     """Callback function to be called on DAG failure."""
-    
+
 
 with DAG(
     dag_id="big_data_batch_pipeline",
     start_date=datetime(2026, 1, 1),
     schedule="@daily",
     catchup=False,
-    template_searchpath=config.database.get("scripts_path", "database_creation/"),
     description="Bigdata Medallion Architecture Batch Processing Pipeline",
     tags=["bigdata", "batch", "medallion_architecture"],
     on_success_callback=success_callback,
