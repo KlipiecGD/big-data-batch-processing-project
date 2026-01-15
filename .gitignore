@@ -27,5 +27,8 @@ gold_layer/
 .pytest_cache/
 .pytest_cache/*
 
-# google credentials
+# Google Credentials
 *.json
+
+# Other
+other/

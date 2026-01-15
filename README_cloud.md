@@ -1,0 +1,67 @@
+## Setup
+
+### 1. Environment Preparation
+
+Create and activate a virtual environment, then install the required dependencies:
+
+```bash
+python3 -m venv venv
+source venv/bin/activate
+pip install -r requirements.txt
+
+```
+
+### 2. Configure Google Cloud connections
+
+Ensure you have a Google Cloud project set up with the necessary services (e.g., BigQuery, Cloud Storage). Create a service account with the required permissions and download the JSON key file. Also authenticate your gcloud CLI:
+```bash
+gcloud auth login
+```
+
+### 3. Create Consolidated `.env` File
+
+Create a `.env` file in the project root. Add path to your Google Cloud service account key file and other necessary configurations.
+
+```bash
+# --- Google Cloud Configuration ---
+GOOGLE_APPLICATION_CREDENTIALS=/path/to/your/service-account-key.json
+GCS_BUCKET_NAME=your-gcs-bucket-name
+GCP_PROJECT_ID=your-gcp-project-id
+BQ_GOLD_LAYER_DATASET=your-bq-gold-layer-dataset
+```
+
+### 4. Create Consolidated `airflow.env` File
+
+```bash
+# --- Airflow Configuration ---
+# Sets Airflow home and DAGs folder to your current project directory
+export AIRFLOW_HOME=$(pwd)
+
+# Points Airflow to your local DAGs directory
+export AIRFLOW__CORE__DAGS_FOLDER=$(pwd)/src/orchestration/dags
+```
+
+*Note: The `.env` and `airflow.env` files are excluded from version control for security.*
+
+### 4. Load Environment and Initialize Airflow
+
+Every time you open a new terminal for this project, you must load the configuration. Then, initialize the Airflow metadata database:
+
+```bash
+source airflow.env
+airflow db migrate
+```
+
+### 5. Start Airflow
+
+Run Airflow in standalone mode. This will start all necessary components (webserver, scheduler, etc.):
+
+```bash
+airflow standalone
+```
+
+### 6. Access the Pipeline
+
+1. Open your web browser and go to `http://localhost:8080`.
+2. Login using the credentials displayed in your terminal (it will be also stored manually in your folder).
+3. Locate and trigger the `big_data_batch_pipeline` DAG.
