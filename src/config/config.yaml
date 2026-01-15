@@ -27,3 +27,5 @@ dag:
 
 cloud:
   default_location: US
+  gcs_bucket_name: big-data-project-bucket-123456
+  bq_gold_layer_dataset: gold_layer

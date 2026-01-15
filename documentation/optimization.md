@@ -5,9 +5,6 @@
 - **Products**: 10,000 records  
 - **Transactions**: 18,000 records
 
-All tables are considered **small to medium datasets** for Spark. 
-Depending on the data size, different optimizations are appropriate.
-
 ---
 
 ## 1. Adaptive Query Execution (AQE)
@@ -77,7 +74,7 @@ transactions.join(broadcast(users), on="user_id")
 
 ### When Explicit Broadcast Is Needed
 Only in cases when:
-- Table is slightly > 10MB but you know it fits in memory
+- Table is slightly > 10MB but we know it fits in memory
 - We have one very small table that exceeds 10MB a bit and one very large table
 
 **Our case**: All tables well under 10MB -> auto-broadcast works perfectly 
@@ -128,18 +125,13 @@ Query 3: Read from memory (fast)
 ### Implementation
 
 ```python
-# Silver Layer: Initial read and cleaning
-# Gold Layer: Repartitioning the large fact table
-transactions = transactions.repartition(4)
-
-# Gold Layer: Coalescing result before writing to PostgreSQL
+# Gold Layer: Coalescing result before writing results
 result_df = result_df.coalesce(1)
 ```
 
 ### Why Applied
 
-* **Balanced Parallelism**: For the transaction fact table (~18,000 records), repartitioning to 4 ensures that each Spark task handles roughly 4,500 records. This provides enough parallelism for modern CPUs without creating excessive task overhead.
-* **Write Optimization**: The final analytical reports in the Gold layer are typically smaller aggregations. Using `coalesce(1)` ensures that Spark only opens a single connection to the PostgreSQL database to write the final result, which is much more efficient than multiple simultaneous writes for small data.
+* **Write Optimization**: The final analytical reports in the Gold layer are typically smaller aggregations. Using `coalesce(1)` ensures that Spark only opens a single connection to write the final result, which is much more efficient than multiple simultaneous writes for small data.
 
 ---
 

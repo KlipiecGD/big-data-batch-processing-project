@@ -46,7 +46,7 @@ def run_silver_layer_transformations(
     )
 
     ingestion_order = config.required_tables.get("creation_order", [])
-    bucket_name = os.getenv("GCS_BUCKET_NAME")
+    bucket_name = config.cloud.get("gcs_bucket_name", "big-data-bucket-123456")
 
     # Define base paths
     local_bronze = config.data_generation.get("bronze_layer_path", "bronze_layer/")

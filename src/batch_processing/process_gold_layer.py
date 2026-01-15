@@ -52,7 +52,7 @@ def run_gold_layer_creation(
 
         # Dynamic path definition based on load source
         if load_from_cloud:
-            silver_path = f"gs://{os.getenv('GCS_BUCKET_NAME')}/silver_layer/"
+            silver_path = f"gs://{config.cloud.get('gcs_bucket_name', 'big-data-bucket-123456')}/silver_layer/"
             logger.info("Loading silver layer data from Cloud Storage bucket")
         else:
             silver_path = config.data_generation.get(
@@ -65,10 +65,6 @@ def run_gold_layer_creation(
 
         # Load transactions (large fact table)
         transactions = spark.read.parquet(os.path.join(silver_path, "transactions"))
-
-        # Repartition for performance
-        # For ~18,000 records, 4 partitions is sufficient
-        transactions = transactions.repartition(4)
 
         # Cache for performance
         transactions.cache()
@@ -100,7 +96,7 @@ def run_gold_layer_creation(
         logger.info("Data loaded from silver layer successfully")
 
         # Get BigQuery dataset name and ensure it exists
-        bq_dataset = os.getenv("BQ_GOLD_LAYER_DATASET", "gold_layer")
+        bq_dataset = config.cloud.get("bq_gold_layer_dataset", "gold_layer")
         ensure_dataset_exists(bq_dataset)
 
         # Get GCP project ID

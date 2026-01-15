@@ -20,17 +20,25 @@ gcloud auth login
 
 ### 3. Create Consolidated `.env` File
 
-Create a `.env` file in the project root. Add path to your Google Cloud service account key file and other necessary configurations.
+Create a `.env` file in the project root. Add path to your Google Cloud service account key file and other necessary configurations. 
 
 ```bash
 # --- Google Cloud Configuration ---
-GOOGLE_APPLICATION_CREDENTIALS=/path/to/your/service-account-key.json
-GCS_BUCKET_NAME=your-gcs-bucket-name
+GOOGLE_APPLICATION_CREDENTIALS=/path/to/your/google-cloud-credentials.json
 GCP_PROJECT_ID=your-gcp-project-id
-BQ_GOLD_LAYER_DATASET=your-bq-gold-layer-dataset
 ```
 
-### 4. Create Consolidated `airflow.env` File
+### 4. Modify config/config.yaml
+
+Update the `config/config.yaml` file to specify your GCS bucket name and BigQuery dataset name:
+
+```yaml
+cloud:
+  gcs_bucket_name: "your-gcs-bucket-name"
+  bq_gold_layer_dataset: "your-bigquery-dataset-name"
+```
+
+### 5. Create Consolidated `airflow.env` File
 
 ```bash
 # --- Airflow Configuration ---
@@ -43,7 +51,7 @@ export AIRFLOW__CORE__DAGS_FOLDER=$(pwd)/src/orchestration/dags
 
 *Note: The `.env` and `airflow.env` files are excluded from version control for security.*
 
-### 4. Load Environment and Initialize Airflow
+### 6. Load Environment and Initialize Airflow
 
 Every time you open a new terminal for this project, you must load the configuration. Then, initialize the Airflow metadata database:
 
@@ -52,7 +60,7 @@ source airflow.env
 airflow db migrate
 ```
 
-### 5. Start Airflow
+### 7. Start Airflow
 
 Run Airflow in standalone mode. This will start all necessary components (webserver, scheduler, etc.):
 
@@ -60,7 +68,7 @@ Run Airflow in standalone mode. This will start all necessary components (webser
 airflow standalone
 ```
 
-### 6. Access the Pipeline
+### 8. Access the Pipeline
 
 1. Open your web browser and go to `http://localhost:8080`.
 2. Login using the credentials displayed in your terminal (it will be also stored manually in your folder).

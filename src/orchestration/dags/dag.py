@@ -15,14 +15,27 @@ from src.data_generation.generate_bronze_layer_data import generate_transactions
 from src.batch_processing.process_silver_layer import run_silver_layer_transformations
 from src.batch_processing.process_gold_layer import run_gold_layer_creation
 from src.config.config import config
+from src.logging_utils.logger import logger
 
 
 def success_callback(context: Context) -> None:
     """Callback function to be called on DAG success."""
+    dag_run = context.get("dag_run")
+    if dag_run:
+        dag_id = dag_run.dag_id
+        logger.info(f"DAG {dag_id} completed successfully!")
+        logger.info((f"Start Time: {dag_run.start_date}, End Time: {dag_run.end_date}"))
+
 
 
 def failure_callback(context: Context) -> None:
     """Callback function to be called on DAG failure."""
+    dag_run = context.get("dag_run")
+    if dag_run:
+        dag_id = dag_run.dag_id
+        logger.error(f"DAG {dag_id} failed!")
+        logger.error((f"Start Time: {dag_run.start_date}, End Time: {dag_run.end_date}"))
+        logger.error(f"Error Message: {context.get('exception')}")
 
 
 with DAG(
@@ -32,8 +45,8 @@ with DAG(
     catchup=False,
     description="Bigdata Medallion Architecture Batch Processing Pipeline",
     tags=["bigdata", "batch", "medallion_architecture"],
-    on_success_callback=success_callback,
-    on_failure_callback=failure_callback,
+    on_success_callback=[success_callback],
+    on_failure_callback=[failure_callback]
 ) as dag:
     # 1. Generate Bronze Layer Data
     generate_bronze_data = PythonOperator(

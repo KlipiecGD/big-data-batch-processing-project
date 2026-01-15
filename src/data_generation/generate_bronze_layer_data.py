@@ -2,15 +2,12 @@ import random
 import os
 import numpy as np
 import pandas as pd
-from dotenv import load_dotenv
 from faker import Faker
 from typing import Optional
 
 from src.cloud_utils.upload_df_to_gcs import upload_dataframe_to_gcs
 from src.config.config import config
 from src.logging_utils.logger import logger
-
-load_dotenv()
 
 fake = Faker()
 # If we want to ensure reproducibility
@@ -204,7 +201,7 @@ def generate_transactions_dataset(
             for filename, df in dfs.items():
                 upload_dataframe_to_gcs(
                     df,
-                    os.getenv("GCS_BUCKET_NAME", "bucket_name"),
+                    config.cloud.get("gcs_bucket_name", "big-data-bucket-123456"),
                     f"bronze_layer/{filename}",
                 )
 

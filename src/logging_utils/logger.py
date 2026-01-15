@@ -35,7 +35,7 @@ def setup_logger(
 
     # Default format with timestamp, level, and message
     if format_string is None:
-        format_string = "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+        format_string = "%(asctime)s - %(name)s - %(levelname)s - %(filename)s - %(funcName)s - %(message)s"
 
     formatter = logging.Formatter(format_string)
 
