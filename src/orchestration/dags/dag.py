@@ -1,4 +1,5 @@
 from airflow import DAG
+from airflow.providers.slack.notifications.slack import SlackNotifier
 from airflow.sdk import Context
 from airflow.providers.standard.operators.python import PythonOperator
 
@@ -37,6 +38,25 @@ def failure_callback(context: Context) -> None:
         logger.error((f"Start Time: {dag_run.start_date}, End Time: {dag_run.end_date}"))
         logger.error(f"Error Message: {context.get('exception')}")
 
+slack_channel = config.dag.get("slack_channel", "#all-airflow")
+
+slack_failure_notifier = SlackNotifier(
+    slack_conn_id="slack_conn", 
+    text=(
+        ":red_circle: *DAG Failure Alert*\n"
+        "*DAG:* {{ dag.dag_id }}\n"
+        "*Task:* {{ ti.task_id }}\n"
+        # "*Error:* `{{ exception }}`\n" - it can be too long
+        "<{{ ti.log_url }}|View Logs>"
+    ),
+    channel=slack_channel
+)
+
+slack_success_notifier = SlackNotifier(
+    slack_conn_id="slack_conn", 
+    text=":large_green_circle: DAG *{{ dag.dag_id }}* completed successfully!",
+    channel=slack_channel
+)
 
 with DAG(
     dag_id="big_data_batch_pipeline",
@@ -45,8 +65,8 @@ with DAG(
     catchup=False,
     description="Bigdata Medallion Architecture Batch Processing Pipeline",
     tags=["bigdata", "batch", "medallion_architecture"],
-    on_success_callback=[success_callback],
-    on_failure_callback=[failure_callback]
+    on_success_callback=[success_callback, slack_success_notifier],
+    on_failure_callback=[failure_callback, slack_failure_notifier],
 ) as dag:
     # 1. Generate Bronze Layer Data
     generate_bronze_data = PythonOperator(

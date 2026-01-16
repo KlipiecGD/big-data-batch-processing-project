@@ -47,8 +47,19 @@ export AIRFLOW_HOME=$(pwd)
 
 # Points Airflow to your local DAGs directory
 export AIRFLOW__CORE__DAGS_FOLDER=$(pwd)/src/orchestration/dags
-```
 
+# If you want to use callbacks for success/failure notifications, set up Slack connection
+export AIRFLOW_CONN_SLACK_CONN='{
+    "conn_type": "slackapi",
+    "password": "your-slack-bot-token-starting-with-xoxb"
+}'
+export OBJC_DISABLE_INITIALIZE_FORK_SAFETY=YES
+```
+- For slack connection specify also slack channel in config.yaml
+```yaml
+dag:
+  slack_channel: "#your-slack-channel"
+```
 *Note: The `.env` and `airflow.env` files are excluded from version control for security.*
 
 ### 6. Load Environment and Initialize Airflow

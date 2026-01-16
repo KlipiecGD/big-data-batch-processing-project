@@ -24,8 +24,11 @@ database:
 dag:
   retries: 2
   retries_delay: 60
+  slack_channel: "#all-airflow"
 
 cloud:
   default_location: US
   gcs_bucket_name: big-data-project-bucket-123456
   bq_gold_layer_dataset: gold_layer
+
+
