@@ -4,6 +4,7 @@ from pyspark.sql import SparkSession
 from src.config.config import config
 from src.logging_utils.logger import logger
 from src.cloud_utils.check_dataset_exists import ensure_dataset_exists
+from src.schemas.schemas import USERS_SCHEMA, PRODUCTS_SCHEMA, TRANSACTIONS_SCHEMA
 
 load_dotenv()
 
@@ -64,7 +65,7 @@ def run_gold_layer_creation(
         logger.info("Loading and caching silver layer Parquet files...")
 
         # Load transactions (large fact table)
-        transactions = spark.read.parquet(os.path.join(silver_path, "transactions"))
+        transactions = spark.read.schema(TRANSACTIONS_SCHEMA).parquet(os.path.join(silver_path, "transactions"))
 
         # Cache for performance
         transactions.cache()
@@ -74,7 +75,7 @@ def run_gold_layer_creation(
         # logger.info(f"Transactions loaded: {transactions.count()} records")
 
         # Load users (dimension table)
-        users = spark.read.parquet(os.path.join(silver_path, "users"))
+        users = spark.read.schema(USERS_SCHEMA).parquet(os.path.join(silver_path, "users"))
 
         # Cache for performance
         users.cache()
@@ -84,7 +85,7 @@ def run_gold_layer_creation(
         # logger.info(f"Users loaded: {users.count()} records")
 
         # Load products (dimension table)
-        products = spark.read.parquet(os.path.join(silver_path, "products"))
+        products = spark.read.schema(PRODUCTS_SCHEMA).parquet(os.path.join(silver_path, "products"))
 
         # Cache for performance
         products.cache()
