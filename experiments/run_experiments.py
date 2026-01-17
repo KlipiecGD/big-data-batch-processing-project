@@ -1,9 +1,10 @@
 import sys
+import os
 import json
 import time
 from pathlib import Path
 from datetime import datetime
-from typing import Any
+from typing import Any, Optional
 
 # Add project root to path
 project_root = str(Path(__file__).parents[1])
@@ -20,10 +21,10 @@ from src.logging_utils.logger import logger
 def setup_experiment_directories() -> None:
     """Create necessary directories for experiments"""
     dirs = [
-        "experiments/data/bronze_layer",
-        "experiments/data/silver_layer",
-        "experiments/data/gold_layer",
-        "experiments/results"
+        optimization_config.get_paths_config().get("bronze_layer_dir", "experiments/data/bronze_layer"),
+        optimization_config.get_paths_config().get("silver_layer_dir", "experiments/data/silver_layer"),
+        optimization_config.get_paths_config().get("gold_layer_dir", "experiments/data/gold_layer"),
+        optimization_config.get_paths_config().get("results_dir", "experiments/results")
     ]
     
     for dir_path in dirs:
@@ -35,7 +36,7 @@ def generate_test_data() -> None:
     """Generate bronze layer data for experiments"""
     logger.info("Generating test data for experiments...")
     
-    # Override config to save locally only
+    # Generate transactions dataset
     generate_transactions_dataset(
         users_count=optimization_config.get_execution_config().get('users_count', 10000),
         products_count=optimization_config.get_execution_config().get('products_count', 10000),
@@ -44,7 +45,7 @@ def generate_test_data() -> None:
         null_wrong_proportion=optimization_config.get_execution_config().get('null_wrong_proportion', 0.5),
         save_locally=True,
         save_to_cloud=False,
-        data_path="experiments/data/bronze_layer/"
+        data_path=optimization_config.get_paths_config().get("bronze_layer_dir", "experiments/data/bronze_layer/")
     )
     
     logger.info("Test data generation completed")
@@ -59,17 +60,17 @@ def run_single_experiment(
     Run a single experiment (silver + gold layer)
     
     Args:
-        experiment_name: Name of the experiment
-        experiment_config: Configuration for the experiment
-        run_number: Run number (for multiple runs)
-    
+        experiment_name (str): Name of the experiment
+        experiment_config (dict[str, Any]): Configuration for the experiment
+        run_number (int): Run number (for multiple runs)
+
     Returns:
         dictionary with all metrics from both layers
     """
-    logger.info(f"\n{'='*80}")
+    logger.info(f"\n{'='*60}")
     logger.info(f"Running Experiment: {experiment_name} (Run {run_number})")
     logger.info(f"Description: {experiment_config.get('description', 'N/A')}")
-    logger.info(f"{'='*80}\n")
+    logger.info(f"{'='*60}\n")
     
     experiment_metrics = {
         'experiment_name': experiment_name,
@@ -83,8 +84,8 @@ def run_single_experiment(
         silver_metrics = run_silver_layer_experiment(
             optimization_config=experiment_config,
             experiment_name=f"{experiment_name}_run{run_number}",
-            bronze_path="experiments/data/bronze_layer",
-            silver_path="experiments/data/silver_layer"
+            bronze_path=optimization_config.get_paths_config().get("bronze_layer_dir", "experiments/data/bronze_layer"),
+            silver_path=optimization_config.get_paths_config().get("silver_layer_dir", "experiments/data/silver_layer")
         )
         experiment_metrics['silver_layer'] = silver_metrics
         
@@ -95,8 +96,8 @@ def run_single_experiment(
         gold_metrics = run_gold_layer_experiment(
             optimization_config=experiment_config,
             experiment_name=f"{experiment_name}_run{run_number}",
-            silver_path="experiments/data/silver_layer",
-            gold_path="experiments/data/gold_layer"
+            silver_path=optimization_config.get_paths_config().get("silver_layer_dir", "experiments/data/silver_layer"),
+            gold_path=optimization_config.get_paths_config().get("gold_layer_dir", "experiments/data/gold_layer")
         )
         experiment_metrics['gold_layer'] = gold_metrics
         
@@ -105,7 +106,7 @@ def run_single_experiment(
             silver_metrics.get('transformation_time', 0) + 
             gold_metrics.get('transformation_time', 0)
         )
-        # Calculate total time including I/O (for reference)
+        # Calculate total time including I/O 
         total_time_with_io = (
             silver_metrics.get('total_execution_time', 0) + 
             gold_metrics.get('total_execution_time', 0)
@@ -115,13 +116,13 @@ def run_single_experiment(
         experiment_metrics['total_time_with_io'] = total_time_with_io
         experiment_metrics['status'] = 'success'
         
-        logger.info(f"\n{'='*80}")
+        logger.info(f"\n{'='*60}")
         logger.info(f"Experiment {experiment_name} (Run {run_number}) Completed Successfully!")
         logger.info(f"Silver Layer Transform Time: {silver_metrics.get('transformation_time', 0):.2f}s")
         logger.info(f"Gold Layer Transform Time: {gold_metrics.get('transformation_time', 0):.2f}s")
         logger.info(f"Total Transform Time: {total_transform_time:.2f}s")
         logger.info(f"Total Time (with I/O): {total_time_with_io:.2f}s")
-        logger.info(f"{'='*80}\n")
+        logger.info(f"{'='*60}\n")
         
     except Exception as e:
         logger.error(f"Experiment {experiment_name} (Run {run_number}) failed: {e}")
@@ -133,14 +134,14 @@ def run_single_experiment(
 
 def run_all_experiments(
     experiments_to_run: list[str] = ['all'],
-    runs_per_experiment: int = 3,
-    warmup_run: bool = True
+    runs_per_experiment: int = optimization_config.get_execution_config().get('runs_per_experiment', 3),
+    warmup_run: bool = optimization_config.get_execution_config().get('warmup_runs', True).astype(bool)
 ) -> list[dict[str, Any]]:
     """
     Run all experiments or a subset of experiments
     
     Args:
-        experiments_to_run (list[str]): list of experiment names to run, if 'all' then run all
+        experiments_to_run (list[str]): list of experiment names to run, if ['all'] then run all
         runs_per_experiment (int): Number of times to run each experiment
         warmup_run (bool): Whether to do a warmup run first
 
@@ -156,12 +157,12 @@ def run_all_experiments(
     else:
         experiments = all_experiments
     
-    logger.info(f"\n{'#'*80}")
+    logger.info(f"\n{'='*60}")
     logger.info(f"STARTING OPTIMIZATION EXPERIMENTS")
     logger.info(f"Total Experiments: {len(experiments)}")
     logger.info(f"Runs per Experiment: {runs_per_experiment}")
     logger.info(f"Warmup Run: {warmup_run}")
-    logger.info(f"{'#'*80}\n")
+    logger.info(f"{'='*60}\n")
     
     all_results = []
     
@@ -182,17 +183,25 @@ def run_all_experiments(
             all_results.append(result)
             
             # Short pause between experiments
-            time.sleep(3)
+            time.sleep(2)
     
     return all_results
 
 
-def save_results(results: list[dict[str, Any]], output_file: str = 'experiments/results/experiment_results.json') -> None:
-    """Save experiment results to JSON file"""
+def save_results(results: list[dict[str, Any]], output_file: Optional[str] = None) -> None:
+    """
+    Save experiment results to JSON file
+    Args:
+        results (list[dict[str, Any]]): List of experiment results
+        output_file (Optional[str]): Path to output file, if None generate with timestamp
+    """
     if output_file is None:
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-        output_file = f"experiments/results/experiment_results_{timestamp}.json"
-    
+        output_file = os.path.join(
+            optimization_config.get_paths_config().get("results_dir", "experiments/results"),
+            f"experiment_results_{timestamp}.json"
+        )
+
     with open(output_file, 'w') as f:
         json.dump(results, f, indent=2)
     
@@ -200,10 +209,14 @@ def save_results(results: list[dict[str, Any]], output_file: str = 'experiments/
 
 
 def analyze_results(results: list[dict[str, Any]]) -> list[dict[str, Any]]:
-    """Generate summary analysis of results"""
-    logger.info("\n" + "="*80)
+    """
+    Generate summary analysis of results
+    Args:
+        results (list[dict[str, Any]]): List of experiment results
+    """
+    logger.info("\n" + "="*60)
     logger.info("EXPERIMENT RESULTS SUMMARY")
-    logger.info("="*80 + "\n")
+    logger.info("="*60 + "\n")
     
     # Group results by experiment
     experiment_groups = {}
@@ -271,9 +284,9 @@ def analyze_results(results: list[dict[str, Any]]) -> list[dict[str, Any]]:
         baseline_time = next((s['avg_total_time'] for s in summary if 'baseline' in s['experiment']), None)
         
         if baseline_time:
-            logger.info("\n" + "="*80)
+            logger.info("\n" + "="*60)
             logger.info("PERFORMANCE IMPROVEMENTS vs BASELINE")
-            logger.info("="*80 + "\n")
+            logger.info("="*60 + "\n")
             
             for s in summary:
                 if 'baseline' not in s['experiment']:
@@ -300,8 +313,8 @@ def main():
     
     results = run_all_experiments(
         experiments_to_run=experiments_to_run,
-        runs_per_experiment=3,
-        warmup_run=True
+        runs_per_experiment=optimization_config.get_execution_config().get('runs_per_experiment', 3),
+        warmup_run=optimization_config.get_execution_config().get('warmup_runs', True).astype(bool)
     )
     
     # Save results
@@ -310,9 +323,9 @@ def main():
     # Analyze and display results
     analyze_results(results)
     
-    logger.info("\n" + "#"*80)
+    logger.info("\n" + "="*60)
     logger.info("ALL EXPERIMENTS COMPLETED!")
-    logger.info("#"*80 + "\n")
+    logger.info("="*60 + "\n")
 
 
 if __name__ == "__main__":

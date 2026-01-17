@@ -1,27 +1,28 @@
 import os
 import shutil
 import time
-from typing import Dict, Any
+from typing import Any
 from pyspark.sql import SparkSession
 from src.config.config import config
 from src.logging_utils.logger import logger
 from src.batch_processing.clean_data import clean_data
+from experiments.config.optimization_experiment_config import optimization_config
 
 
 def run_silver_layer_experiment(
-    optimization_config: Dict[str, Any],
+    optimization_config: dict[str, Any],
     experiment_name: str,
-    bronze_path: str = "experiments/data/bronze_layer",
-    silver_path: str = "experiments/data/silver_layer"
-) -> Dict[str, Any]:
+    bronze_path: str = optimization_config.get_paths_config().get("bronze_layer_dir", "experiments/data/bronze_layer"),
+    silver_path: str = optimization_config.get_paths_config().get("silver_layer_dir", "experiments/data/silver_layer")
+) -> dict[str, Any]:
     """
     Run silver layer transformations with specific optimization configuration
     
     Args:
-        optimization_config(Dict[str, Any]): Dictionary with optimization settings
-        experiment_name(str): Name of the experiment for logging
-        bronze_path(str): Path to bronze layer data
-        silver_path(str): Path to save silver layer data
+        optimization_config (dict[str, Any]): Dictionary with optimization settings
+        experiment_name (str): Name of the experiment for logging
+        bronze_path (str): Path to bronze layer data
+        silver_path (str): Path to save silver layer data
 
     Returns:
         Dictionary with performance metrics
@@ -58,9 +59,6 @@ def run_silver_layer_experiment(
     )
     
     spark = spark_builder.getOrCreate()
-    
-    # Get Spark context for metrics
-    sc = spark.sparkContext
     
     ingestion_order = config.required_tables.get("creation_order", [])
     cleaned_dfs = {}
@@ -132,10 +130,10 @@ def run_silver_layer_experiment(
         # Stop timing after all processing
         processing_end_time = time.time()
         
-        # Collect metrics (only transformation time, not I/O)
+        # Collect metrics 
         metrics['end_time'] = time.time()
         metrics['transformation_time'] = processing_end_time - processing_start_time
-        metrics['total_execution_time'] = metrics['end_time'] - metrics['start_time']  # includes I/O for reference)
+        metrics['total_execution_time'] = metrics['end_time'] - metrics['start_time']  # includes I/O 
         
         logger.info(f"Silver layer experiment '{experiment_name}' transformation time: {metrics['transformation_time']:.2f}s")
         logger.info(f"Silver layer experiment '{experiment_name}' total time (with I/O): {metrics['total_execution_time']:.2f}s")

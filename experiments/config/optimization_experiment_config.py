@@ -7,7 +7,11 @@ class OptimizationConfig:
     """Configuration for Spark optimization experiments"""
 
     def __init__(self, config_path: str = "experiments/config/optimization_config.yaml") -> None:
-        """Load experiment configuration from YAML file"""
+        """
+        Load experiment configuration from YAML file
+        Args:
+            config_path (str): Path to the YAML configuration file
+        """
         config_file = Path(config_path)
         
         if not config_file.exists():
@@ -17,7 +21,11 @@ class OptimizationConfig:
             self._config = yaml.safe_load(f)
     
     def get_experiment_config(self, experiment_name: str) -> Dict[str, Any]:
-        """Get configuration for a specific experiment"""
+        """
+        Get configuration for a specific experiment
+        Args:
+            experiment_name (str): Name of the experiment
+        """
         experiments = self._config.get('experiments', {})
         
         if experiment_name not in experiments:
@@ -41,4 +49,7 @@ class OptimizationConfig:
         """Get metrics to collect"""
         return self._config.get('metrics', [])
     
+    def get_paths_config(self) -> Dict[str, str]:
+        """Get paths configuration"""
+        return self._config.get('paths', {})
 optimization_config = OptimizationConfig()

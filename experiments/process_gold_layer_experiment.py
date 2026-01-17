@@ -1,25 +1,26 @@
 import os
 import time
-from typing import Dict, Any
+from typing import Any
 from pyspark.sql import SparkSession
 from src.config.config import config
 from src.logging_utils.logger import logger
+from experiments.config.optimization_experiment_config import optimization_config
 
 
 def run_gold_layer_experiment(
-    optimization_config: Dict[str, Any],
+    optimization_config: dict[str, Any],
     experiment_name: str,
-    silver_path: str = "experiments/data/silver_layer",
-    gold_path: str = "experiments/data/gold_layer"
-) -> Dict[str, Any]:
+    silver_path: str = optimization_config.get_paths_config().get("silver_layer_dir", "experiments/data/silver_layer"),
+    gold_path: str = optimization_config.get_paths_config().get("gold_layer_dir", "experiments/data/gold_layer")
+) -> dict[str, Any]:
     """
     Run gold layer transformations with specific optimization configuration
     
     Args:
-        optimization_config(Dict[str, Any]): Dictionary with optimization settings
-        experiment_name(str): Name of the experiment for logging
-        silver_path(str): Path to silver layer data
-        gold_path(str): Path to save gold layer results
+        optimization_config (dict[str, Any]): Dictionary with optimization settings
+        experiment_name (str): Name of the experiment for logging
+        silver_path (str): Path to silver layer data
+        gold_path (str): Path to save gold layer results
 
     Returns:
         Dictionary with performance metrics
@@ -55,9 +56,6 @@ def run_gold_layer_experiment(
     
     spark = spark_builder.getOrCreate()
     
-    # Get Spark context for metrics
-    sc = spark.sparkContext
-    
     cached_dfs = {}
     
     try:
@@ -80,7 +78,7 @@ def run_gold_layer_experiment(
             cached_dfs['users'] = users
         users.createOrReplaceTempView("users")
         
-        # Load products (with partition pruning awareness if partitioned)
+        # Load products
         products = spark.read.parquet(os.path.join(experiment_silver_path, "products"))
         if enable_caching:
             products.cache()
@@ -153,7 +151,7 @@ def run_gold_layer_experiment(
         # Collect overall metrics 
         metrics['end_time'] = time.time()
         metrics['transformation_time'] = transformation_end_time - transformation_start_time
-        metrics['total_execution_time'] = metrics['end_time'] - metrics['start_time']  # includes I/O for reference
+        metrics['total_execution_time'] = metrics['end_time'] - metrics['start_time']  # includes I/O 
         metrics['query_metrics'] = query_metrics
         
         logger.info(f"Gold layer experiment '{experiment_name}' transformation time: {metrics['transformation_time']:.2f}s")
