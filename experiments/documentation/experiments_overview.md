@@ -26,20 +26,20 @@ experiments/
 ├── config/                               # Experiment configuration files
 │   ├── optimization_config.yaml          # Configuration for all experiments
 │   └── optimization_experiment_config.py # Config loader class
-├── process_silver_layer_experiment.py # Silver layer with configurable opts
-├── process_gold_layer_experiment.py   # Gold layer with configurable opts
-├── run_experiments.py                 # Main experiment runner
-├── visualize_results.py               # Results visualization script
-├── data/                              # Experiment data (local only)
-│   ├── bronze_layer/                  # Generated test data
-│   ├── silver_layer/                  # Processed data per experiment
-│   └── gold_layer/                    # Final results per experiment
-└── results/                           # Experiment results and charts
-    ├── experiment_results_*.json      # Raw results data
-    ├── comparison_chart.png           # Overall comparison
-    ├── speedup_chart.png              # Speedup vs baseline
-    ├── variability_chart.png          # Run-to-run variability
-    └── layer_breakdown.png            # Silver vs Gold time breakdown
+├── process_silver_layer_experiment.py    # Silver layer with configurable opts
+├── process_gold_layer_experiment.py      # Gold layer with configurable opts
+├── run_experiments.py                    # Main experiment runner
+├── visualize_results.py                  # Results visualization script
+├── data/                                 # Experiment data (local only)
+│   ├── bronze_layer/                     # Generated test data
+│   ├── silver_layer/                     # Processed data per experiment
+│   └── gold_layer/                       # Final results per experiment
+└── results/                              # Experiment results and charts
+    ├── experiment_results_*.json         # Raw results data
+    ├── comparison_chart.png              # Overall comparison
+    ├── speedup_chart.png                 # Speedup vs baseline
+    ├── variability_chart.png             # Run-to-run variability
+    └── layer_breakdown.png               # Silver vs Gold time breakdown
 ```
 
 ## Setup
@@ -58,6 +58,7 @@ Edit `experiments/optimization_config.yaml` to:
 - Add new experiment configurations
 - Change dataset size
 - Adjust data generation parameters
+- Set paths for data and results
 
 ## Running Experiments
 
@@ -121,9 +122,6 @@ After experiments complete, create charts:
 ```bash
 # Uses most recent results file
 python experiments/visualize_results.py
-
-# Or specify a results file
-python experiments/visualize_results.py 
 ``` 
 
 This creates 4 visualization charts:
@@ -132,7 +130,7 @@ This creates 4 visualization charts:
 3. **variability_chart.png** - Box plot showing consistency
 4. **layer_breakdown.png** - Silver vs Gold layer time distribution
 
-## Understanding the Metrics
+## Metrics
 
 ### Collected Metrics
 

@@ -34,5 +34,4 @@ credentials/
 other/
 
 # Experiment Artifacts
-experiments/results/
 experiments/data/
