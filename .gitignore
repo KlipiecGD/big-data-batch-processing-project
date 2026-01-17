@@ -18,7 +18,6 @@ gold_layer/
 
 # Miscellaneous / Non-Source Files 
 *.pdf
-*.txt
 
 # ruff
 .ruff_cache/
