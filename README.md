@@ -88,6 +88,14 @@ airflow standalone
 2. Login using the credentials displayed in your terminal (it will be also stored manually in your folder).
 3. Locate and trigger the `big_data_batch_pipeline` DAG.
 
-### 9. Optimization and Experiments
+### 9. Testing
+
+To run unit tests for the project, execute the following command:
+
+```bash
+pytest tests/
+```
+
+### 10. Optimization and Experiments
 
 To read about optimization applied, experiments regarding performance improvements and how to run them, refer to the [Optimization Experiments Documentation](experiments/documentation/experiments_report.md).
