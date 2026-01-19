@@ -1,4 +1,5 @@
 import pandas as pd
+from src.config.config import config
 
 from src.data_generation.generate_bronze_layer_data import generate_transactions_dataset
 
@@ -11,9 +12,9 @@ def test_data_generation(tmp_path) -> None:
     test_output_dir.mkdir()
 
     generate_transactions_dataset(
-        users_count=5,
-        products_count=2,
-        transactions_count=10,
+        users_count=config.data_generation.get("users_count", 10000),
+        products_count=config.data_generation.get("products_count", 10000),
+        transactions_count=config.data_generation.get("transactions_count", 18000),
         save_to_cloud=False,
         save_locally=True,
         data_path=str(test_output_dir),
@@ -56,11 +57,11 @@ def test_noise_injection(tmp_path) -> None:
     test_output_dir.mkdir()
 
     generate_transactions_dataset(
-        users_count=100,
-        products_count=50,
-        transactions_count=200,
-        noise_level=0.1,
-        null_wrong_proportion=0.5,
+        users_count=config.data_generation.get("users_count", 10000),
+        products_count=config.data_generation.get("products_count", 10000),
+        transactions_count=config.data_generation.get("transactions_count", 18000),
+        noise_level=config.data_generation.get("noise_level", 0.03),
+        null_wrong_proportion=config.data_generation.get("null_wrong_proportion", 0.5),
         save_to_cloud=False,
         save_locally=True,
         data_path=str(test_output_dir),
@@ -94,4 +95,3 @@ def test_noise_injection(tmp_path) -> None:
     assert df_transactions["quantity"].dtype == object or any(
         not str(x).isdigit() or int(x) <= 0 for x in df_transactions["quantity"]
     ), "No incorrect values found in transactions data."
-

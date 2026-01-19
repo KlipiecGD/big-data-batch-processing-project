@@ -2,7 +2,7 @@ data_generation:
   bronze_layer_path: bronze_layer/
   silver_layer_path: silver_layer/
   users_count: 10000
-  items_count: 10000
+  products_count: 10000
   transactions_count: 18000
   noise_level: 0.03
   null_wrong_proportion: 0.5

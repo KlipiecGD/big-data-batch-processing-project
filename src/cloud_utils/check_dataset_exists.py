@@ -5,7 +5,9 @@ from src.logging_utils.logger import logger
 from src.config.config import config
 
 
-def ensure_dataset_exists(dataset_id: str, location: str = config.cloud.get("default_location", "US")) -> None:
+def ensure_dataset_exists(
+    dataset_id: str, location: str = config.cloud.get("default_location", "US")
+) -> None:
     """
     Ensure that a BigQuery dataset exists; create it if it does not.
     Args:

@@ -69,7 +69,7 @@ def inject_noise(
 
 def generate_transactions_dataset(
     users_count: int = config.data_generation.get("users_count", 10000),
-    products_count: int = config.data_generation.get("items_count", 10000),
+    products_count: int = config.data_generation.get("products_count", 10000),
     transactions_count: int = config.data_generation.get("transactions_count", 18000),
     noise_level: float = config.data_generation.get("noise_level", 0.03),
     null_wrong_proportion: float = config.data_generation.get(
@@ -165,7 +165,7 @@ def generate_transactions_dataset(
                 ),
             }
         )
-    # Inject noise 
+    # Inject noise
     df_transactions = inject_noise(
         pd.DataFrame(transactions), noise_level, null_wrong_proportion
     )

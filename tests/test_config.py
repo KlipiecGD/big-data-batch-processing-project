@@ -20,6 +20,7 @@ def test_config_creation_order_tables_loading() -> None:
         "'products' table should be processed before 'transactions' table."
     )
 
+
 def test_config_drop_order_tables_loading() -> None:
     """
     Test to ensure that the required tables are loaded from the config in order of deletion.
@@ -27,7 +28,9 @@ def test_config_drop_order_tables_loading() -> None:
     tables = config.required_tables.get("drop_order", [])
     assert isinstance(tables, list), "Required tables should be a list."
     assert len(tables) > 0, "There should be at least one required table."
-    assert "transactions" in tables, "'transactions' table should be in the required tables."
+    assert "transactions" in tables, (
+        "'transactions' table should be in the required tables."
+    )
     assert "users" in tables, "'users' table should be in the required tables."
     assert "products" in tables, "'products' table should be in the required tables."
     assert tables.index("transactions") < tables.index("users"), (

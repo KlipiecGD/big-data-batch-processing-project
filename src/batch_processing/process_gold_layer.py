@@ -65,7 +65,9 @@ def run_gold_layer_creation(
         logger.info("Loading and caching silver layer Parquet files...")
 
         # Load transactions (large fact table)
-        transactions = spark.read.schema(TRANSACTIONS_SCHEMA).parquet(os.path.join(silver_path, "transactions"))
+        transactions = spark.read.schema(TRANSACTIONS_SCHEMA).parquet(
+            os.path.join(silver_path, "transactions")
+        )
 
         # Cache for performance
         transactions.cache()
@@ -75,7 +77,9 @@ def run_gold_layer_creation(
         # logger.info(f"Transactions loaded: {transactions.count()} records")
 
         # Load users (dimension table)
-        users = spark.read.schema(USERS_SCHEMA).parquet(os.path.join(silver_path, "users"))
+        users = spark.read.schema(USERS_SCHEMA).parquet(
+            os.path.join(silver_path, "users")
+        )
 
         # Cache for performance
         users.cache()
@@ -85,7 +89,9 @@ def run_gold_layer_creation(
         # logger.info(f"Users loaded: {users.count()} records")
 
         # Load products (dimension table)
-        products = spark.read.schema(PRODUCTS_SCHEMA).parquet(os.path.join(silver_path, "products"))
+        products = spark.read.schema(PRODUCTS_SCHEMA).parquet(
+            os.path.join(silver_path, "products")
+        )
 
         # Cache for performance
         products.cache()
@@ -133,9 +139,9 @@ def run_gold_layer_creation(
                     logger.info(f"Saving {report_name} to BigQuery...")
                     result_df.write.format("bigquery").option(
                         "table", f"{project_id}.{bq_dataset}.{report_name}"
-                    ).option("temporaryGcsBucket", config.cloud.get("gcs_bucket_name")).mode(
-                        "overwrite"
-                    ).save()
+                    ).option(
+                        "temporaryGcsBucket", config.cloud.get("gcs_bucket_name")
+                    ).mode("overwrite").save()
                     logger.info(f"Successfully saved {report_name} to BigQuery")
                 except Exception as e:
                     logger.error(f"Failed to save {report_name} to BigQuery: {e}")

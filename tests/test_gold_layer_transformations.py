@@ -1,6 +1,13 @@
 import pytest
 from pyspark.sql import SparkSession
-from src.config.config import config
+from tests.data.test_data_gold import (
+    USERS_DATA,
+    PRODUCTS_DATA,
+    TRANSACTIONS_DATA,
+    USERS_SCHEMA,
+    PRODUCTS_SCHEMA,
+    TRANSACTIONS_SCHEMA,
+)
 
 
 @pytest.fixture(scope="session")
@@ -23,71 +30,27 @@ def setup_mock_views(spark_session) -> None:
     Fixture to set up mock views for testing transformations.
     """
     # Mock users data
-    users_data = [
-        (1, "Kacper", "kacper@example.com", "Poland", "Armii Krajowej", "2024-01-01"),
-        (2, "Anna", "anna@example.com", "Germany", "Baker Street", "2024-01-02"),
-        (3, "John", "john@example.com", "USA", "Main St", "2024-01-03"),
-        (4, "Maria", "maria@example.com", "Poland", "Krakowska", "2024-01-04"),
-        (5, "Peter", "peter@example.com", "Germany", "Hauptstrasse", "2024-01-05"),
-        (6, "Sarah", "sarah@example.com", "USA", "Oak Avenue", "2024-01-06"),
-        (7, "Lucas", "lucas@example.com", "France", "Rue de Paris", "2024-01-07"),
-        (8, "Emma", "emma@example.com", "Poland", "Warszawska", "2024-01-08"),
-    ]
-    spark_session.createDataFrame(
-        users_data, ["user_id", "name", "email", "country", "address", "signup_date"]
-    ).createOrReplaceTempView("users")
+    users_data = USERS_DATA
+    users_schema = USERS_SCHEMA
+
+    spark_session.createDataFrame(users_data, users_schema).createOrReplaceTempView(
+        "users"
+    )
 
     # Mock products data
-    products_data = [
-        (1, "Product A", "Category 1", "Description for Product A", 10.0),
-        (2, "Product B", "Category 1", "Description for Product B", 20.0),
-        (3, "Product C", "Category 1", "Description for Product C", 30.0),
-        (4, "Product D", "Category 2", "Description for Product D", 15.0),
-        (5, "Product E", "Category 2", "Description for Product E", 25.0),
-        (6, "Product F", "Category 2", "Description for Product F", 35.0),
-        (7, "Product G", "Category 3", "Description for Product G", 50.0),
-        (8, "Product H", "Category 3", "Description for Product H", 45.0),
-        (9, "Product I", "Category 1", "Description for Product I", 12.0),
-        (10, "Product J", "Category 2", "Description for Product J", 18.0),
-    ]
+    products_data = PRODUCTS_DATA
+    products_schema = PRODUCTS_SCHEMA
+
     spark_session.createDataFrame(
-        products_data, ["product_id", "name", "category", "description", "price"]
+        products_data, products_schema
     ).createOrReplaceTempView("products")
 
     # Mock transactions data
-    transactions_data = [
-        # 2025-01-01
-        (1, 1, 1, 2, "2025-01-01"),  # Kacper: 2 * 10.0 = 20.0
-        (2, 4, 2, 3, "2025-01-01"),  # Maria: 3 * 20.0 = 60.0
-        # 2025-01-02
-        (3, 2, 2, 1, "2025-01-02"),  # Anna: 1 * 20.0 = 20.0
-        (4, 3, 4, 2, "2025-01-02"),  # John: 2 * 15.0 = 30.0
-        (5, 5, 7, 1, "2025-01-02"),  # Peter: 1 * 50.0 = 50.0
-        # 2025-01-03
-        (6, 3, 3, 5, "2025-01-03"),  # John: 5 * 30.0 = 150.0
-        (7, 6, 6, 2, "2025-01-03"),  # Sarah: 2 * 35.0 = 70.0
-        (8, 1, 9, 4, "2025-01-03"),  # Kacper: 4 * 12.0 = 48.0
-        # 2025-01-04
-        (9, 2, 1, 3, "2025-01-04"),  # Anna: 3 * 10.0 = 30.0
-        (10, 4, 5, 2, "2025-01-04"),  # Maria: 2 * 25.0 = 50.0
-        (11, 7, 8, 1, "2025-01-04"),  # Lucas: 1 * 45.0 = 45.0
-        # 2025-01-05
-        (12, 3, 2, 4, "2025-01-05"),  # John: 4 * 20.0 = 80.0
-        (13, 8, 1, 5, "2025-01-05"),  # Emma: 5 * 10.0 = 50.0
-        (14, 2, 3, 2, "2025-01-05"),  # Anna: 2 * 30.0 = 60.0
-        # 2025-01-06
-        (15, 1, 4, 3, "2025-01-06"),  # Kacper: 3 * 15.0 = 45.0
-        (16, 5, 2, 2, "2025-01-06"),  # Peter: 2 * 20.0 = 40.0
-        # 2025-01-07
-        (17, 6, 7, 2, "2025-01-07"),  # Sarah: 2 * 50.0 = 100.0
-        (18, 3, 5, 3, "2025-01-07"),  # John: 3 * 25.0 = 75.0
-        # 2025-01-08
-        (19, 4, 1, 10, "2025-01-08"),  # Maria: 10 * 10.0 = 100.0
-        (20, 7, 3, 1, "2025-01-08"),  # Lucas: 1 * 30.0 = 30.0
-    ]
+    transactions_data = TRANSACTIONS_DATA
+    transactions_schema = TRANSACTIONS_SCHEMA
+
     spark_session.createDataFrame(
-        transactions_data,
-        ["transaction_id", "user_id", "product_id", "quantity", "transaction_date"],
+        transactions_data, transactions_schema
     ).createOrReplaceTempView("transactions")
 
 

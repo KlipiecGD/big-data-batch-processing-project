@@ -110,8 +110,8 @@ execution:
   null_wrong_proportion: 0.5 # Proportion of null/wrong entries in noise
 
 paths:
-  data_dir: "experiments/data"
-  bronze_layer_dir: "experiments/data/bronze_layer"
-  silver_layer_dir: "experiments/data/silver_layer"
-  gold_layer_dir: "experiments/data/gold_layer"
-  results_dir: "experiments/results"
+  data_dir: "experiments/data/"
+  bronze_layer_dir: "experiments/data/bronze_layer/"
+  silver_layer_dir: "experiments/data/silver_layer/"
+  gold_layer_dir: "experiments/data/gold_layer/"
+  results_dir: "experiments/results/"

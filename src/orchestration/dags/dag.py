@@ -32,7 +32,6 @@ def success_callback(context: Context) -> None:
         logger.info((f"Start Time: {dag_run.start_date}, End Time: {dag_run.end_date}"))
 
 
-
 def failure_callback(context: Context) -> None:
     """
     Callback function to be called on DAG failure.
@@ -43,13 +42,16 @@ def failure_callback(context: Context) -> None:
     if dag_run:
         dag_id = dag_run.dag_id
         logger.error(f"DAG {dag_id} failed!")
-        logger.error((f"Start Time: {dag_run.start_date}, End Time: {dag_run.end_date}"))
+        logger.error(
+            (f"Start Time: {dag_run.start_date}, End Time: {dag_run.end_date}")
+        )
         logger.error(f"Error Message: {context.get('exception')}")
+
 
 slack_channel = config.dag.get("slack_channel", "#all-airflow")
 
 slack_failure_notifier = SlackNotifier(
-    slack_conn_id="slack_conn", 
+    slack_conn_id="slack_conn",
     text=(
         ":red_circle: *DAG Failure Alert*\n"
         "*DAG:* {{ dag.dag_id }}\n"
@@ -57,13 +59,13 @@ slack_failure_notifier = SlackNotifier(
         # "*Error:* `{{ exception }}`\n" - it can be too long
         "<{{ ti.log_url }}|View Logs>"
     ),
-    channel=slack_channel
+    channel=slack_channel,
 )
 
 slack_success_notifier = SlackNotifier(
-    slack_conn_id="slack_conn", 
+    slack_conn_id="slack_conn",
     text=":large_green_circle: DAG *{{ dag.dag_id }}* completed successfully!",
-    channel=slack_channel
+    channel=slack_channel,
 )
 
 with DAG(

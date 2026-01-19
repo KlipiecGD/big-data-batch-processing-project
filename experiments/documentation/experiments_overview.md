@@ -1,6 +1,6 @@
 # Spark Optimization Experiments
 
-This directory contains a comprehensive A/B testing framework for evaluating different Spark optimization strategies on your batch processing pipeline.
+This directory contains a comprehensive A/B testing framework for evaluating different Spark optimization strategies on implemented data processing pipelines. The experiments focus on measuring the impact of various optimizations on transformation performance in a medallion architecture (Bronze -> Silver -> Gold layers).
 
 ## Overview
 

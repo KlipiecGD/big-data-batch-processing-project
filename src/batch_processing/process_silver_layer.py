@@ -40,7 +40,9 @@ def run_silver_layer_transformations(
         .config("spark.hadoop.google.cloud.auth.service.account.enable", "true")
         .config(
             "spark.hadoop.google.cloud.auth.service.account.json.keyfile",
-            os.getenv("GOOGLE_APPLICATION_CREDENTIALS"), # We need to pass path to GCP credentials JSON
+            os.getenv(
+                "GOOGLE_APPLICATION_CREDENTIALS"
+            ),  # We need to pass path to GCP credentials JSON
         )
         .config("spark.sql.shuffle.partitions", "8")
         .getOrCreate()
