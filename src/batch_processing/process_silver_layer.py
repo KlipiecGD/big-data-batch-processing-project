@@ -4,7 +4,6 @@ from pyspark.sql import SparkSession
 from src.config.config import config
 from src.logging_utils.logger import logger
 from src.batch_processing.clean_data import clean_data
-from src.schemas.schemas import USERS_SCHEMA, PRODUCTS_SCHEMA, TRANSACTIONS_SCHEMA
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -51,13 +50,6 @@ def run_silver_layer_transformations(
     ingestion_order = config.required_tables.get("creation_order", [])
     bucket_name = config.cloud.get("gcs_bucket_name", "big-data-bucket-123456")
 
-    # Map table names to schemas
-    schema_map = {
-        "users": USERS_SCHEMA,
-        "products": PRODUCTS_SCHEMA,
-        "transactions": TRANSACTIONS_SCHEMA,
-    }
-
     # Define base paths
     local_bronze = config.data_generation.get("bronze_layer_path", "bronze_layer/")
     local_silver = config.data_generation.get("silver_layer_path", "silver_layer/")
@@ -79,7 +71,7 @@ def run_silver_layer_transformations(
                 input_path = os.path.join(local_bronze, f"{table}.csv")
 
             # Read CSV using Spark
-            df = spark.read.csv(input_path, header=True, schema=schema_map.get(table))
+            df = spark.read.csv(input_path, header=True, inferSchema=True)
 
             # Log record counts before and after cleaning - action triggers computation - only for debugging
             # initial_count = df.count()

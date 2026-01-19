@@ -180,11 +180,11 @@ def generate_transactions_dataset(
             os.makedirs(data_path)
         logger.info("Saving generated files locally...")
         df_users.to_csv(os.path.join(data_path, "users.csv"), index=False)
-        logger.info(f"Saved users to {data_path}users.csv")
+        logger.info(f"Saved users to {os.path.join(data_path, 'users.csv')}")
         df_products.to_csv(os.path.join(data_path, "products.csv"), index=False)
-        logger.info(f"Saved products to {data_path}products.csv")
+        logger.info(f"Saved products to {os.path.join(data_path, 'products.csv')}")
         df_transactions.to_csv(os.path.join(data_path, "transactions.csv"), index=False)
-        logger.info(f"Saved transactions to {data_path}transactions.csv")
+        logger.info(f"Saved transactions to {os.path.join(data_path, 'transactions.csv')}")
 
     # Upload to Cloud Storage if required
     if save_to_cloud:

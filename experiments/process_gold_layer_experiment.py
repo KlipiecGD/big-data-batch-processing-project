@@ -4,7 +4,6 @@ from typing import Any
 from pyspark.sql import SparkSession
 from src.config.config import config
 from src.logging_utils.logger import logger
-from src.schemas.schemas import USERS_SCHEMA, PRODUCTS_SCHEMA, TRANSACTIONS_SCHEMA
 from experiments.config.optimization_experiment_config import optimization_config
 
 
@@ -72,8 +71,8 @@ def run_gold_layer_experiment(
         experiment_silver_path = os.path.join(silver_path, experiment_name)
 
         # Load transactions
-        transactions = spark.read.schema(TRANSACTIONS_SCHEMA).parquet(
-            os.path.join(experiment_silver_path, "transactions")
+        transactions = spark.read.parquet(
+            os.path.join(experiment_silver_path, "transactions"), inferSchema=True
         )
         if enable_caching:
             transactions.cache()
@@ -83,8 +82,8 @@ def run_gold_layer_experiment(
         transactions.createOrReplaceTempView("transactions")
 
         # Load users
-        users = spark.read.schema(USERS_SCHEMA).parquet(
-            os.path.join(experiment_silver_path, "users")
+        users = spark.read.parquet(
+            os.path.join(experiment_silver_path, "users"), inferSchema=True
         )
         if enable_caching:
             users.cache()
@@ -94,8 +93,8 @@ def run_gold_layer_experiment(
         users.createOrReplaceTempView("users")
 
         # Load products
-        products = spark.read.schema(PRODUCTS_SCHEMA).parquet(
-            os.path.join(experiment_silver_path, "products")
+        products = spark.read.parquet(
+            os.path.join(experiment_silver_path, "products"), inferSchema=True
         )
         if enable_caching:
             products.cache()

@@ -23,12 +23,10 @@ gcloud auth login
 
 Create a `.env` file in the project root. Add path to your Google Cloud service account key file and other necessary configurations. Replace placeholders with your actual values:
 - `GOOGLE_APPLICATION_CREDENTIALS`: Path to your Google Cloud service account key file that you downloaded earlier.
-- `GCP_PROJECT_ID`: Your Google Cloud project ID.
 
 ```bash
 # --- Google Cloud Configuration ---
 GOOGLE_APPLICATION_CREDENTIALS=/path/to/your/google-cloud-credentials.json
-GCP_PROJECT_ID=your-gcp-project-id
 ```
 
 ### 4. Modify config/config.yaml

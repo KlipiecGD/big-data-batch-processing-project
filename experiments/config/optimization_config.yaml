@@ -99,6 +99,30 @@ experiments:
       enable_partitioning: true
       partition_column: "category"
 
+  # Experiment 9: Everything without partitioning
+  all_but_partitioning:
+    name: "All But Partitioning"
+    description: "All optimizations enabled except partitioning"
+    optimizations:
+      shuffle_partitions: 8
+      enable_aqe: true
+      enable_caching: true
+      enable_coalesce: true
+      compression: "snappy"
+      broadcast_threshold: 10485760  # 10MB
+      enable_partitioning: false
+
+  shuffle_broadcast_and_aqe:
+    name: "Shuffle, Broadcast, AQE and compression"
+    description: "Optimize shuffle partitions, enable broadcast joins and AQE"
+    optimizations:
+      shuffle_partitions: 8
+      enable_aqe: true
+      enable_caching: false
+      enable_coalesce: false
+      compression: "none"
+      broadcast_threshold: 10485760  # 10MB
+
 # Experiment execution settings
 execution:
   runs_per_experiment: 3  # Number of times to run each experiment
