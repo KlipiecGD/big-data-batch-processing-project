@@ -45,10 +45,6 @@ class OptimizationConfig:
         """Get execution settings"""
         return self._config.get('execution', {})
     
-    def get_metrics_config(self) -> list:
-        """Get metrics to collect"""
-        return self._config.get('metrics', [])
-    
     def get_paths_config(self) -> Dict[str, str]:
         """Get paths configuration"""
         return self._config.get('paths', {})

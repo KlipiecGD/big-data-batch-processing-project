@@ -73,9 +73,6 @@ def run_silver_layer_experiment(
     }
     
     try:
-        # Start timing after spark session is created
-        processing_start_time = time.time()
-        
         for table in ingestion_order:
             logger.info(f"Processing table: {table}")
             
@@ -136,17 +133,14 @@ def run_silver_layer_experiment(
             write_builder.parquet(output_path, mode="overwrite")
             logger.info(f"Saved {table} to {output_path}")
         
-        # Stop timing after all processing
-        processing_end_time = time.time()
-        
-        # Collect metrics 
+        # Transformation time is the sum of table times to strictly exclude I/O and spark session creation
+        metrics['transformation_time'] = sum(metrics['table_transform_times'].values())
         metrics['end_time'] = time.time()
-        metrics['transformation_time'] = processing_end_time - processing_start_time
-        metrics['total_execution_time'] = metrics['end_time'] - metrics['start_time']  # includes I/O 
-        
+        metrics['total_execution_time'] = metrics['end_time'] - metrics['start_time'] # includes building spark session and I/O
+
         logger.info(f"Silver layer experiment '{experiment_name}' transformation time: {metrics['transformation_time']:.2f}s")
-        logger.info(f"Silver layer experiment '{experiment_name}' total time (with I/O): {metrics['total_execution_time']:.2f}s")
-        
+        logger.info(f"Silver layer experiment '{experiment_name}' total time (with building spark session and I/O): {metrics['total_execution_time']:.2f}s")
+
     except Exception as e:
         logger.error(f"Silver layer experiment failed: {e}")
         metrics['error'] = str(e)

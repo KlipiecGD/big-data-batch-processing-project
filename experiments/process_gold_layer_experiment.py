@@ -114,7 +114,7 @@ def run_gold_layer_experiment(
                 
                 report_name = query_file.split(".")[0]
                 
-                # Start timinig query transformation
+                # Start timing query transformation
                 query_start = time.time()
                 
                 # Execute transformation
@@ -123,8 +123,12 @@ def run_gold_layer_experiment(
                 # Apply coalesce if enabled
                 if enable_coalesce:
                     result_df = result_df.coalesce(1)
+
+                # Cache the result so count() and write() share the same execution - avoid double computation
+                # We always cache here because count is called below to measure transformation time
+                result_df.cache()
                 
-                # Trigger computation with count (but don't save yet)
+                # Trigger action to measure pure transformation time (lazy evaluation)
                 result_count = result_df.count()
 
                 # Stop timing query transformation
@@ -141,22 +145,23 @@ def run_gold_layer_experiment(
                 # Save to parquet
                 output_path = os.path.join(gold_path, experiment_name, report_name)
                 result_df.write.parquet(output_path, mode="overwrite")
+
+                result_df.unpersist()
                 
             except Exception as e:
                 logger.error(f"Failed to process {query_file}: {e}")
                 raise
         
-        # STOP TIMING TRANSFORMATIONS
-        transformation_end_time = time.time()
+        # Transformation time is the sum of individual query times to strictly exclude saving I/O and building spark session
+        metrics['transformation_time'] = sum(q['transformation_time'] for q in query_metrics)
         
         # Collect overall metrics 
         metrics['end_time'] = time.time()
-        metrics['transformation_time'] = transformation_end_time - transformation_start_time
-        metrics['total_execution_time'] = metrics['end_time'] - metrics['start_time']  # includes I/O 
+        metrics['total_execution_time'] = metrics['end_time'] - metrics['start_time']  # includes building spark session and I/O
         metrics['query_metrics'] = query_metrics
         
         logger.info(f"Gold layer experiment '{experiment_name}' transformation time: {metrics['transformation_time']:.2f}s")
-        logger.info(f"Gold layer experiment '{experiment_name}' total time (with I/O): {metrics['total_execution_time']:.2f}s")
+        logger.info(f"Gold layer experiment '{experiment_name}' total time (with building spark session and I/O): {metrics['total_execution_time']:.2f}s")
         
     except Exception as e:
         logger.error(f"Gold layer experiment failed: {e}")

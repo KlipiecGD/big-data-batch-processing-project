@@ -103,9 +103,9 @@ experiments:
 execution:
   runs_per_experiment: 3  # Number of times to run each experiment
   warmup_runs: 1  # Number of warmup runs before measurement
-  products_size: 10000  # Number of products in dataset
-  transactions_size: 18000 # Number of transactions in dataset
-  users_size: 10000 # Number of users in dataset
+  products_count: 10000  # Number of products in dataset
+  transactions_count: 18000 # Number of transactions in dataset
+  users_count: 10000 # Number of users in dataset
   noise_level: 0.03 # Proportion of noise to add to the data
   null_wrong_proportion: 0.5 # Proportion of null/wrong entries in noise
 
@@ -115,14 +115,3 @@ paths:
   silver_layer_dir: "experiments/data/silver_layer"
   gold_layer_dir: "experiments/data/gold_layer"
   results_dir: "experiments/results"
-
-  
-# Metrics to collect
-metrics:
-  - execution_time
-  - memory_usage
-  - disk_io
-  - shuffle_read_bytes
-  - shuffle_write_bytes
-  - task_count
-  - stage_count

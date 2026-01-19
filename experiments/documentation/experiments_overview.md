@@ -17,7 +17,7 @@ The experiments compare 8 different optimization configurations:
 
 ### Key Measurement Approach
 
-**Important:** The experiments measure **transformation time only**, excluding data loading and saving I/O operations. This provides a more accurate comparison of optimization effectiveness by isolating the actual processing work from disk operations.
+**Important:** The experiments measure **transformation time only**, excluding spark session creation, data loading, and saving I/O operations. This provides a more accurate comparison of optimization effectiveness by isolating the actual processing work from disk operations.
 
 ## Directory Structure
 
@@ -44,7 +44,7 @@ experiments/
 
 ## Setup
 
-### 1. Install Additional Dependencies
+### 1. Install Additional Dependencies (they are already in requirements.txt)
 
 ```bash
 pip install matplotlib numpy
