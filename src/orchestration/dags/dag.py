@@ -20,7 +20,11 @@ from src.logging_utils.logger import logger
 
 
 def success_callback(context: Context) -> None:
-    """Callback function to be called on DAG success."""
+    """
+    Callback function to be called on DAG success.
+    Args:
+        context (Context): Airflow context object containing DAG run information.
+    """
     dag_run = context.get("dag_run")
     if dag_run:
         dag_id = dag_run.dag_id
@@ -30,7 +34,11 @@ def success_callback(context: Context) -> None:
 
 
 def failure_callback(context: Context) -> None:
-    """Callback function to be called on DAG failure."""
+    """
+    Callback function to be called on DAG failure.
+    Args:
+        context (Context): Airflow context object containing DAG run information.
+    """
     dag_run = context.get("dag_run")
     if dag_run:
         dag_id = dag_run.dag_id

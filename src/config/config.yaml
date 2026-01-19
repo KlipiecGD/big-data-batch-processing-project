@@ -8,7 +8,6 @@ data_generation:
   null_wrong_proportion: 0.5
   save_locally: false
   save_to_cloud: true
-  save_to_bq: true
   load_from_cloud: true
 
 queries:

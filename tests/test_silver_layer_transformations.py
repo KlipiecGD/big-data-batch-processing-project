@@ -99,7 +99,7 @@ def test_clean_users_removes_invalid_emails(spark_session) -> None:
     Test that clean_data removes rows with invalid emails.
     """
     data = [
-        (1, "John Doe", "john@example.com", "USA", "123 Main St", "2024-01-01"),
+        (1, "John Doe", "john@example.com", "USA", "123 Main St", "2024-01-01"), # Valid
         (
             2,
             "Jane Smith",
@@ -117,7 +117,7 @@ def test_clean_users_removes_invalid_emails(spark_session) -> None:
             "France",
             "654 Maple Dr",
             "2024-01-05",
-        ),
+        ), # Valid
     ]
     schema = StructType(
         [

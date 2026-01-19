@@ -6,7 +6,9 @@ from pyspark.sql import SparkSession
 from src.config.config import config
 from src.logging_utils.logger import logger
 from src.batch_processing.clean_data import clean_data
+from src.schemas.schemas import USERS_SCHEMA, PRODUCTS_SCHEMA, TRANSACTIONS_SCHEMA
 from experiments.config.optimization_experiment_config import optimization_config
+
 
 
 def run_silver_layer_experiment(
@@ -62,6 +64,13 @@ def run_silver_layer_experiment(
     
     ingestion_order = config.required_tables.get("creation_order", [])
     cleaned_dfs = {}
+
+    # Map table names to schemas
+    schema_map = {
+        "users": USERS_SCHEMA,
+        "products": PRODUCTS_SCHEMA,
+        "transactions": TRANSACTIONS_SCHEMA,
+    }
     
     try:
         # Start timing after spark session is created
@@ -72,7 +81,7 @@ def run_silver_layer_experiment(
             
             # Read CSV 
             input_path = os.path.join(bronze_path, f"{table}.csv")
-            df = spark.read.csv(input_path, header=True, inferSchema=True)
+            df = spark.read.csv(input_path, header=True, schema=schema_map.get(table))
             
             # Start timing transformations
             table_transform_start = time.time()

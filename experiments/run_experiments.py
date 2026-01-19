@@ -135,7 +135,7 @@ def run_single_experiment(
 def run_all_experiments(
     experiments_to_run: list[str] = ['all'],
     runs_per_experiment: int = optimization_config.get_execution_config().get('runs_per_experiment', 3),
-    warmup_run: bool = optimization_config.get_execution_config().get('warmup_runs', True).astype(bool)
+    warmup_run: bool = optimization_config.get_execution_config().get('warmup_runs', True)
 ) -> list[dict[str, Any]]:
     """
     Run all experiments or a subset of experiments
@@ -314,7 +314,7 @@ def main():
     results = run_all_experiments(
         experiments_to_run=experiments_to_run,
         runs_per_experiment=optimization_config.get_execution_config().get('runs_per_experiment', 3),
-        warmup_run=optimization_config.get_execution_config().get('warmup_runs', True).astype(bool)
+        warmup_run=optimization_config.get_execution_config().get('warmup_runs', True)
     )
     
     # Save results

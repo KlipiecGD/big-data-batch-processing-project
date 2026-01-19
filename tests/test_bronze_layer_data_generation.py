@@ -74,10 +74,24 @@ def test_noise_injection(tmp_path) -> None:
     # Check for nulls and incorrect values in users
     assert df_users.isnull().values.any(), "No null values found in users data."
 
+    # Check for incorrect values in users (e.g., invalid email formats)
+    assert df_users["email"].dtype == object or any(
+        not str(x).count("@") == 1 for x in df_users["email"]
+    ), "No incorrect email formats found in users data."
+
     # Check for nulls and incorrect values in products
     assert df_products.isnull().values.any(), "No null values found in products data."
+
+    # Check for negative prices in products
+    assert any(df_products["price"] < 0), "No negative prices found in products data."
 
     # Check for nulls and incorrect values in transactions
     assert df_transactions.isnull().values.any(), (
         "No null values found in transactions data."
     )
+
+    # Check for incorrect values in quantity (should be positive integers)
+    assert df_transactions["quantity"].dtype == object or any(
+        not str(x).isdigit() or int(x) <= 0 for x in df_transactions["quantity"]
+    ), "No incorrect values found in transactions data."
+

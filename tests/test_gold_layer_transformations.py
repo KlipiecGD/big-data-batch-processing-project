@@ -7,6 +7,8 @@ from src.config.config import config
 def spark_session() -> SparkSession:
     """
     Fixture to create a Spark session for testing.
+    Returns:
+        SparkSession: A Spark session object.
     """
     return (
         SparkSession.builder.master("local[1]")
