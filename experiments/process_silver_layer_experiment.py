@@ -42,7 +42,7 @@ def run_silver_layer_experiment(
     shuffle_partitions = opts.get("shuffle_partitions", 200)
     enable_aqe = opts.get("enable_aqe", False)
     enable_caching = opts.get("enable_caching", False)
-    enable_coalesce = opts.get("enable_coalesce", False)
+    # enable_coalesce = opts.get("enable_coalesce", False) # Not used in this experiment
     compression = opts.get("compression", "none")
     broadcast_threshold = opts.get("broadcast_threshold", 10485760)
     enable_partitioning = opts.get("enable_partitioning", False)

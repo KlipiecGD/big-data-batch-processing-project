@@ -96,4 +96,4 @@ pytest tests/
 
 ### 10. Optimization and Experiments
 
-To read about optimization applied, experiments regarding performance improvements and how to run them, refer to the [Optimization Experiments Documentation](experiments/documentation/experiments_report.md).
+To read about optimization applied, experiments regarding performance improvements and how to run them, refer to the [Optimization Experiments Documentation](experiments/documentation/experiments_overview.md) and [Experiments Report](experiments/documentation/experiments_report.md).
