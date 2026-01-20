@@ -1,3 +1,65 @@
+# Big Data Project: Medallion Architecture with Spark Optimizations
+
+## Introduction
+
+This project implements a robust Big Data batch processing pipeline using the **Medallion Architecture** (Bronze, Silver, and Gold layers). It utilizes **PySpark** for scalable data transformations, **Google Cloud Storage (GCS)** for intermediate storage, and **BigQuery** for the final analytical "Gold" layer.
+
+The pipeline is orchestrated via **Apache Airflow**, ensuring reliable execution of data generation, cleaning, and reporting tasks. A standout feature of this repository is its **Spark Optimization Experimentation Framework**, which allows for A/B testing of various Spark performance configurations (e.g., Adaptive Query Execution, Shuffle Partitioning, and Broadcast Joins) to determine the most efficient processing strategies for specific workloads.
+
+---
+
+## Project Structure
+
+```text
+.
+├── credentials/                         # Google Cloud service account keys (not in version control)
+│   └── your-service-account-key.json
+├── diagrams/                            # Architecture and schema diagrams
+│   ├── gold_tables.png                  # Gold layer table schemas
+│   └── silver_tables.png                # Silver layer ERD
+├── experiments/                         # Optimization A/B testing framework
+│   ├── config/                          # Experiment-specific configurations
+│   │   ├── optimization_config.yaml
+│   │   └── optimization_experiment_config.py
+│   ├── documentation/                   # Detailed experiment reports
+│   │   ├── experiments_overview.md
+│   │   └── experiments_report.md
+│   ├── results/                         # Metrics and visualization charts
+│   │   ├── comparison_chart.png
+│   │   ├── speedup_chart.png
+│   │   └── variability_plots/           # Variability plots per config
+│   ├── process_gold_layer_experiment.py
+│   ├── process_silver_layer_experiment.py
+│   ├── run_experiments.py               # Main experiment runner
+│   └── visualize_results.py             # Plot generation script
+├── sql_queries/                         # Analytical SQL for Gold layer
+│   ├── day_to_day_sales.sql
+│   ├── performance_analysis_by_country.sql
+│   ├── sales_moving_average.sql
+│   ├── top_products_by_category.sql
+│   └── top_spenders.sql
+├── src/                                 # Main source code
+│   ├── batch_processing/                # Core ETL logic
+│   │   ├── clean_data.py                # Data quality and cleaning rules
+│   │   ├── process_gold_layer.py        # BigQuery table creation
+│   │   └── process_silver_layer.py      # Parquet generation
+│   ├── cloud_utils/                     # GCS and BigQuery helpers
+│   ├── config/                          # Centralized project configuration
+│   ├── data_generation/                 # Synthetic data generators
+│   ├── logging_utils/                   # Custom application logger
+│   └── orchestration/                   # Airflow DAG definitions
+│       └── dags/
+│           └── dag.py
+├── tests/                               # Unit and transformation tests
+├── .env                                 # Environment variables (not in version control)
+├── airflow.env                          # Airflow environment variables (not in version control)
+├── .gitignore
+├── pytest.ini
+├── requirements.txt
+└── README.md
+```
+---
+
 ## Setup
 
 ### 1. Environment Preparation
@@ -15,6 +77,7 @@ pip install -r requirements.txt
 Ensure you have a Google Cloud project set up with the necessary services (e.g., BigQuery, Cloud Storage). Create a service account with the required permissions and download the JSON key file. Put the key file in a secure location excluded from version control.
 
 Also authenticate your gcloud CLI:
+
 ```bash
 gcloud auth login
 ```
@@ -22,7 +85,8 @@ gcloud auth login
 ### 3. Create Consolidated `.env` File
 
 Create a `.env` file in the project root. Add path to your Google Cloud service account key file and other necessary configurations. Replace placeholders with your actual values:
-- `GOOGLE_APPLICATION_CREDENTIALS`: Path to your Google Cloud service account key file that you downloaded earlier.
+
+* `GOOGLE_APPLICATION_CREDENTIALS`: Path to your Google Cloud service account key file that you downloaded earlier.
 
 ```bash
 # --- Google Cloud Configuration ---
@@ -31,7 +95,7 @@ GOOGLE_APPLICATION_CREDENTIALS=/path/to/your/google-cloud-credentials.json
 
 ### 4. Modify config/config.yaml
 
-Update the `config/config.yaml` file to specify your GCS bucket name and BigQuery dataset name:
+Update the `src/config/config.yaml` file to specify your GCS bucket name and BigQuery dataset name:
 
 ```yaml
 cloud:
@@ -56,12 +120,6 @@ export AIRFLOW_CONN_SLACK_CONN='{
 }'
 export OBJC_DISABLE_INITIALIZE_FORK_SAFETY=YES
 ```
-- For slack connection specify also slack channel in config.yaml
-```yaml
-dag:
-  slack_channel: "#your-slack-channel"
-```
-*Note: The `.env` and `airflow.env` files are excluded from version control for security.*
 
 ### 6. Load Environment and Initialize Airflow
 
@@ -83,7 +141,7 @@ airflow standalone
 ### 8. Access the Pipeline
 
 1. Open your web browser and go to `http://localhost:8080`.
-2. Login using the credentials displayed in your terminal (it will be also stored manually in your folder).
+2. Login using the credentials displayed in your terminal.
 3. Locate and trigger the `big_data_batch_pipeline` DAG.
 
 ### 9. Testing
