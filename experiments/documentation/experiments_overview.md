@@ -152,7 +152,7 @@ For each experiment (across multiple runs):
 - **Average Total Time**: Includes I/O (for reference)
 - **Standard Deviation**: Measure of consistency
 - **Min/Max**: Best and worst case performance
-- **Speedup**: Percentage improvement vs baseline
+- **Speedup**: Improvement vs baseline
 
 ## Adding New Experiments
 
