@@ -121,6 +121,13 @@ export AIRFLOW_CONN_SLACK_CONN='{
 export OBJC_DISABLE_INITIALIZE_FORK_SAFETY=YES
 ```
 
+For slack connection, you also need to specify the name of Slack channel in config file located at `src/config/config.yaml`:
+
+```yaml
+dag:
+  slack_channel: "#your-slack-channel"
+```
+
 ### 6. Load Environment and Initialize Airflow
 
 Every time you open a new terminal for this project, you must load the configuration. Then, initialize the Airflow metadata database:
