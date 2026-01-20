@@ -95,7 +95,7 @@ def run_silver_layer_transformations(
                     df = df.join(valid_product_ids, on="product_id", how="inner")
 
                     logger.info(
-                        f"Applied referential integrity filters for transactions"
+                        "Applied referential integrity filters for transactions"
                     )
 
             # Count is an action that triggers computation - only for debugging

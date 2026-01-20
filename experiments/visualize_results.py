@@ -101,7 +101,6 @@ def create_comparison_chart(
     experiments = list(viz_data.keys())
     silver_times = [viz_data[exp]["avg_silver"] for exp in experiments]
     gold_times = [viz_data[exp]["avg_gold"] for exp in experiments]
-    std_devs = [viz_data[exp]["std_total"] for exp in experiments]
 
     # Create figure
     fig, ax = plt.subplots(figsize=(14, 8))
@@ -113,19 +112,6 @@ def create_comparison_chart(
     bars1 = ax.bar(x, silver_times, width, label="Silver Layer", color="#4CAF50")
     bars2 = ax.bar(
         x, gold_times, width, bottom=silver_times, label="Gold Layer", color="#2196F3"
-    )
-
-    # Add error bars for total time
-    total_times = [silver_times[i] + gold_times[i] for i in range(len(experiments))]
-    ax.errorbar(
-        x,
-        total_times,
-        yerr=std_devs,
-        fmt="none",
-        color="black",
-        capsize=5,
-        capthick=2,
-        label="Std Dev",
     )
 
     # Customize
@@ -143,11 +129,11 @@ def create_comparison_chart(
     ax.grid(axis="y", alpha=0.3, linestyle="--")
 
     # Add value labels on bars
-    for i, (s, g) in enumerate(zip(silver_times, gold_times)):
-        total = s + g
+    total_times = [silver_times[i] + gold_times[i] for i in range(len(experiments))]
+    for i, total in enumerate(total_times):
         ax.text(
             i,
-            total + std_devs[i] + 0.5,
+            total + 0.5,
             f"{total:.1f}s",
             ha="center",
             va="bottom",
@@ -258,62 +244,95 @@ def create_speedup_chart(
 
 def create_variability_chart(
     viz_data: dict[str, Any],
-    output_file: str = os.path.join(
-        optimization_config.get_paths_config().get(
-            "results_dir", "experiments/results"
-        ),
-        "variability_chart.png",
+    output_dir: str = optimization_config.get_paths_config().get(
+        "results_dir", "experiments/results"
     ),
 ) -> None:
     """
-    Create box plot showing run-to-run variability
+    Create individual box plots for each experiment showing run-to-run variability
     Args:
         viz_data (dict[str, Any]): Prepared data for visualization
-        output_file (str): Path to save the output chart
+        output_dir (str): Directory to save the output charts
     """
-    experiments = list(viz_data.keys())
-    all_runs = [viz_data[exp]["all_runs"] for exp in experiments]
+    # Create subdirectory for variability plots
+    variability_dir = os.path.join(output_dir, "variability_plots")
+    os.makedirs(variability_dir, exist_ok=True)
 
-    # Create figure
-    fig, ax = plt.subplots(figsize=(14, 8))
+    for exp_name, data in viz_data.items():
+        all_runs = data["all_runs"]
 
-    bp = ax.boxplot(
-        all_runs,
-        patch_artist=True,
-        showmeans=True,
-        meanline=True,
-        boxprops=dict(facecolor="#2196F3", alpha=0.7),
-        medianprops=dict(color="red", linewidth=2),
-        meanprops=dict(color="green", linewidth=2, linestyle="--"),
-        whiskerprops=dict(linewidth=1.5),
-        capprops=dict(linewidth=1.5),
-    )
+        # Create figure for this experiment
+        fig, ax = plt.subplots(figsize=(8, 6))
 
-    # Customize
-    ax.set_xlabel("Experiment Configuration", fontsize=12, fontweight="bold")
-    ax.set_ylabel("Total Transformation Time (seconds)", fontsize=12, fontweight="bold")
-    ax.set_title(
-        "Transformation Time Variability Across Runs\n(Includes DAG building + execution, excludes write I/O)",
-        fontsize=14,
-        fontweight="bold",
-        pad=20,
-    )
-    ax.set_xticklabels(experiments, rotation=45, ha="right")
-    ax.grid(axis="y", alpha=0.3, linestyle="--")
+        bp = ax.boxplot(
+            [all_runs],
+            patch_artist=True,
+            showmeans=True,
+            meanline=True,
+            boxprops=dict(facecolor="#2196F3", alpha=0.7),
+            medianprops=dict(color="red", linewidth=2),
+            meanprops=dict(color="green", linewidth=2, linestyle="--"),
+            whiskerprops=dict(linewidth=1.5),
+            capprops=dict(linewidth=1.5),
+        )
 
-    # Add legend
-    from matplotlib.lines import Line2D
+        # Customize
+        ax.set_ylabel(
+            "Total Transformation Time (seconds)", fontsize=12, fontweight="bold"
+        )
+        ax.set_title(
+            f"Transformation Time Variability: {exp_name}\n(Includes DAG building + execution, excludes write I/O)",
+            fontsize=13,
+            fontweight="bold",
+            pad=20,
+        )
+        ax.set_xticklabels([exp_name])
+        ax.grid(axis="y", alpha=0.3, linestyle="--")
 
-    legend_elements = [
-        Line2D([0], [0], color="red", linewidth=2, label="Median"),
-        Line2D([0], [0], color="green", linewidth=2, linestyle="--", label="Mean"),
-    ]
-    ax.legend(handles=legend_elements, loc="upper right", fontsize=10)
+        # Add statistics text
+        mean_time = np.mean(all_runs)
+        median_time = np.median(all_runs)
+        std_time = np.std(all_runs)
+        min_time = np.min(all_runs)
+        max_time = np.max(all_runs)
 
-    plt.tight_layout()
-    plt.savefig(output_file, dpi=300, bbox_inches="tight")
-    logger.info(f"Variability chart saved to: {output_file}")
-    plt.close()
+        stats_text = (
+            f"Mean: {mean_time:.2f}s\n"
+            f"Median: {median_time:.2f}s\n"
+            f"Std Dev: {std_time:.2f}s\n"
+            f"Min: {min_time:.2f}s\n"
+            f"Max: {max_time:.2f}s"
+        )
+
+        ax.text(
+            0.98,
+            0.98,
+            stats_text,
+            transform=ax.transAxes,
+            fontsize=10,
+            verticalalignment="top",
+            horizontalalignment="right",
+            bbox=dict(boxstyle="round", facecolor="wheat", alpha=0.5),
+        )
+
+        # Add legend
+        from matplotlib.lines import Line2D
+
+        legend_elements = [
+            Line2D([0], [0], color="red", linewidth=2, label="Median"),
+            Line2D([0], [0], color="green", linewidth=2, linestyle="--", label="Mean"),
+        ]
+        ax.legend(handles=legend_elements, loc="upper left", fontsize=10)
+
+        plt.tight_layout()
+
+        # Save individual plot
+        output_file = os.path.join(variability_dir, f"{exp_name}_variability.png")
+        plt.savefig(output_file, dpi=300, bbox_inches="tight")
+        logger.info(f"Variability chart for {exp_name} saved to: {output_file}")
+        plt.close()
+
+    logger.info(f"All variability charts saved to: {variability_dir}")
 
 
 def create_layer_breakdown_chart(
@@ -433,6 +452,6 @@ def main(results_file: Union[str, None] = None) -> None:
 
 
 if __name__ == "__main__":
-    # Provide path to your results file
-    results_file = "experiments/results/experiment_results.json"
+    # Provide path to your results file if you want to specify it
+    results_file = None
     main(results_file)

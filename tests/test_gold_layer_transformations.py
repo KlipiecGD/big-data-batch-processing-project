@@ -334,7 +334,7 @@ def test_day_to_day_sales(spark_session, setup_mock_views) -> None:
     # Verify second day has previous day sales
     second_day = results[1]
     assert second_day["previous_day_sales"] == first_day["total_sales"], (
-        f"Second day previous_day_sales should equal first day total_sales"
+        "Second day previous_day_sales should equal first day total_sales"
     )
 
     # Verify percent change calculation for second day

@@ -130,13 +130,18 @@ def run_single_experiment(
         total_transform_time = silver_metrics.get(
             "transformation_time", 0
         ) + gold_metrics.get("transformation_time", 0)
-        # Calculate total time including I/O
-        total_time_with_io = silver_metrics.get(
+        # Calculate total time including write I/O
+        total_time_with_io = silver_metrics.get("write_time", 0) + gold_metrics.get(
+            "write_time", 0
+        )
+        # Calculate total time including spark initialization and write I/O
+        total_time = silver_metrics.get("total_execution_time", 0) + gold_metrics.get(
             "total_execution_time", 0
-        ) + gold_metrics.get("total_execution_time", 0)
+        )
 
         experiment_metrics["total_transformation_time"] = total_transform_time
         experiment_metrics["total_time_with_io"] = total_time_with_io
+        experiment_metrics["total_time"] = total_time
         experiment_metrics["status"] = "success"
 
         logger.info(f"\n{'=' * 60}")
@@ -151,6 +156,9 @@ def run_single_experiment(
         )
         logger.info(f"Total Transform Time: {total_transform_time:.2f}s")
         logger.info(f"Total Time (with I/O): {total_time_with_io:.2f}s")
+        logger.info(
+            f"Total Time (with Spark Initialization and I/O): {total_time:.2f}s"
+        )
         logger.info(f"{'=' * 60}\n")
 
     except Exception as e:
@@ -193,7 +201,7 @@ def run_all_experiments(
         experiments = all_experiments
 
     logger.info(f"\n{'=' * 60}")
-    logger.info(f"STARTING OPTIMIZATION EXPERIMENTS")
+    logger.info("STARTING OPTIMIZATION EXPERIMENTS")
     logger.info(f"Total Experiments: {len(experiments)}")
     logger.info(f"Runs per Experiment: {runs_per_experiment}")
     logger.info(f"Warmup Run: {warmup_run}")
@@ -204,7 +212,7 @@ def run_all_experiments(
     # Warmup run with baseline
     if warmup_run and "baseline" in experiments:
         logger.info("Running warmup with baseline configuration...")
-        warmup_result = run_single_experiment(
+        _ = run_single_experiment(
             "baseline_warmup", experiments["baseline"], 0
         )
         logger.info("Warmup completed\n")

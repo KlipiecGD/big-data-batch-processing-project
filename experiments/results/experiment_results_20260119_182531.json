@@ -1,0 +1,2597 @@
+[
+  {
+    "experiment_name": "baseline",
+    "run_number": 1,
+    "timestamp": "2026-01-19T18:10:52.977345",
+    "config": {
+      "name": "Baseline - No Optimizations",
+      "description": "Default Spark configuration without any optimizations",
+      "optimizations": {
+        "shuffle_partitions": 200,
+        "enable_aqe": false,
+        "enable_caching": false,
+        "enable_coalesce": false,
+        "compression": "none",
+        "broadcast_threshold": 0
+      }
+    },
+    "silver_layer": {
+      "experiment_name": "baseline_run1",
+      "stage": "silver_layer",
+      "start_time": 1768842652.9774022,
+      "table_transform_times": {
+        "users": 0.19773316383361816,
+        "products": 0.2318429946899414,
+        "transactions": 3.3096089363098145
+      },
+      "table_row_counts": {
+        "users": 9700,
+        "products": 9700,
+        "transactions": 16422
+      },
+      "table_write_times": {
+        "users": 0.18377304077148438,
+        "products": 0.14876389503479004,
+        "transactions": 5.468429088592529
+      },
+      "transformation_time": 3.739185094833374,
+      "write_time": 5.800966024398804,
+      "end_time": 1768842662.99492,
+      "total_execution_time": 10.017517805099487
+    },
+    "gold_layer": {
+      "experiment_name": "baseline_run1",
+      "stage": "gold_layer",
+      "start_time": 1768842665.62473,
+      "end_time": 1768842710.049506,
+      "transformation_time": 13.340136051177979,
+      "write_time": 30.86197566986084,
+      "total_execution_time": 44.42477583885193,
+      "query_metrics": [
+        {
+          "query": "day_to_day_sales.sql",
+          "transformation_time": 0.1527550220489502,
+          "result_count": 727,
+          "write_time": 5.207716703414917
+        },
+        {
+          "query": "top_spenders.sql",
+          "transformation_time": 5.470072269439697,
+          "result_count": 10,
+          "write_time": 5.077737808227539
+        },
+        {
+          "query": "performance_analysis_by_country.sql",
+          "transformation_time": 5.23292088508606,
+          "result_count": 243,
+          "write_time": 12.870846271514893
+        },
+        {
+          "query": "sales_moving_average.sql",
+          "transformation_time": 0.15321993827819824,
+          "result_count": 727,
+          "write_time": 4.963260889053345
+        },
+        {
+          "query": "top_products_by_category.sql",
+          "transformation_time": 2.3311679363250732,
+          "result_count": 47,
+          "write_time": 2.7424139976501465
+        }
+      ]
+    },
+    "total_transformation_time": 17.079321146011353,
+    "total_time_with_io": 36.662941694259644,
+    "total_time": 54.442293643951416,
+    "status": "success"
+  },
+  {
+    "experiment_name": "baseline",
+    "run_number": 2,
+    "timestamp": "2026-01-19T18:11:52.836691",
+    "config": {
+      "name": "Baseline - No Optimizations",
+      "description": "Default Spark configuration without any optimizations",
+      "optimizations": {
+        "shuffle_partitions": 200,
+        "enable_aqe": false,
+        "enable_caching": false,
+        "enable_coalesce": false,
+        "compression": "none",
+        "broadcast_threshold": 0
+      }
+    },
+    "silver_layer": {
+      "experiment_name": "baseline_run2",
+      "stage": "silver_layer",
+      "start_time": 1768842712.836737,
+      "table_transform_times": {
+        "users": 0.15476703643798828,
+        "products": 0.10710787773132324,
+        "transactions": 3.1782898902893066
+      },
+      "table_row_counts": {
+        "users": 9700,
+        "products": 9700,
+        "transactions": 16422
+      },
+      "table_write_times": {
+        "users": 0.16104483604431152,
+        "products": 0.13443207740783691,
+        "transactions": 4.943129062652588
+      },
+      "transformation_time": 3.440164804458618,
+      "write_time": 5.238605976104736,
+      "end_time": 1768842721.784564,
+      "total_execution_time": 8.947827100753784
+    },
+    "gold_layer": {
+      "experiment_name": "baseline_run2",
+      "stage": "gold_layer",
+      "start_time": 1768842724.416082,
+      "end_time": 1768842768.251873,
+      "transformation_time": 13.160287380218506,
+      "write_time": 30.48729133605957,
+      "total_execution_time": 43.83579111099243,
+      "query_metrics": [
+        {
+          "query": "day_to_day_sales.sql",
+          "transformation_time": 0.12696194648742676,
+          "result_count": 727,
+          "write_time": 5.020859003067017
+        },
+        {
+          "query": "top_spenders.sql",
+          "transformation_time": 5.262328863143921,
+          "result_count": 10,
+          "write_time": 5.118771076202393
+        },
+        {
+          "query": "performance_analysis_by_country.sql",
+          "transformation_time": 5.177855968475342,
+          "result_count": 243,
+          "write_time": 12.641309976577759
+        },
+        {
+          "query": "sales_moving_average.sql",
+          "transformation_time": 0.12142491340637207,
+          "result_count": 727,
+          "write_time": 5.002183198928833
+        },
+        {
+          "query": "top_products_by_category.sql",
+          "transformation_time": 2.4717156887054443,
+          "result_count": 47,
+          "write_time": 2.7041680812835693
+        }
+      ]
+    },
+    "total_transformation_time": 16.600452184677124,
+    "total_time_with_io": 35.72589731216431,
+    "total_time": 52.783618211746216,
+    "status": "success"
+  },
+  {
+    "experiment_name": "baseline",
+    "run_number": 3,
+    "timestamp": "2026-01-19T18:12:50.598723",
+    "config": {
+      "name": "Baseline - No Optimizations",
+      "description": "Default Spark configuration without any optimizations",
+      "optimizations": {
+        "shuffle_partitions": 200,
+        "enable_aqe": false,
+        "enable_caching": false,
+        "enable_coalesce": false,
+        "compression": "none",
+        "broadcast_threshold": 0
+      }
+    },
+    "silver_layer": {
+      "experiment_name": "baseline_run3",
+      "stage": "silver_layer",
+      "start_time": 1768842770.5988019,
+      "table_transform_times": {
+        "users": 0.14433789253234863,
+        "products": 0.1056678295135498,
+        "transactions": 3.266594171524048
+      },
+      "table_row_counts": {
+        "users": 9700,
+        "products": 9700,
+        "transactions": 16422
+      },
+      "table_write_times": {
+        "users": 0.15293288230895996,
+        "products": 0.12975811958312988,
+        "transactions": 4.958396911621094
+      },
+      "transformation_time": 3.5165998935699463,
+      "write_time": 5.241087913513184,
+      "end_time": 1768842779.627372,
+      "total_execution_time": 9.028570175170898
+    },
+    "gold_layer": {
+      "experiment_name": "baseline_run3",
+      "stage": "gold_layer",
+      "start_time": 1768842782.1773682,
+      "end_time": 1768842827.062272,
+      "transformation_time": 13.353291034698486,
+      "write_time": 31.321614027023315,
+      "total_execution_time": 44.88490390777588,
+      "query_metrics": [
+        {
+          "query": "day_to_day_sales.sql",
+          "transformation_time": 0.12234091758728027,
+          "result_count": 727,
+          "write_time": 5.406594753265381
+        },
+        {
+          "query": "top_spenders.sql",
+          "transformation_time": 5.617177963256836,
+          "result_count": 10,
+          "write_time": 5.224193096160889
+        },
+        {
+          "query": "performance_analysis_by_country.sql",
+          "transformation_time": 5.047422170639038,
+          "result_count": 243,
+          "write_time": 12.230790138244629
+        },
+        {
+          "query": "sales_moving_average.sql",
+          "transformation_time": 0.13127493858337402,
+          "result_count": 727,
+          "write_time": 5.692572832107544
+        },
+        {
+          "query": "top_products_by_category.sql",
+          "transformation_time": 2.435075044631958,
+          "result_count": 47,
+          "write_time": 2.767463207244873
+        }
+      ]
+    },
+    "total_transformation_time": 16.869890928268433,
+    "total_time_with_io": 36.5627019405365,
+    "total_time": 53.91347408294678,
+    "status": "success"
+  },
+  {
+    "experiment_name": "shuffle_only",
+    "run_number": 1,
+    "timestamp": "2026-01-19T18:13:49.369513",
+    "config": {
+      "name": "Shuffle Partitions Only",
+      "description": "Only optimize shuffle partitions for small dataset",
+      "optimizations": {
+        "shuffle_partitions": 8,
+        "enable_aqe": false,
+        "enable_caching": false,
+        "enable_coalesce": false,
+        "compression": "none",
+        "broadcast_threshold": 0
+      }
+    },
+    "silver_layer": {
+      "experiment_name": "shuffle_only_run1",
+      "stage": "silver_layer",
+      "start_time": 1768842829.369706,
+      "table_transform_times": {
+        "users": 0.14001798629760742,
+        "products": 0.11026501655578613,
+        "transactions": 0.3388051986694336
+      },
+      "table_row_counts": {
+        "users": 9700,
+        "products": 9700,
+        "transactions": 16422
+      },
+      "table_write_times": {
+        "users": 0.15024828910827637,
+        "products": 0.1290760040283203,
+        "transactions": 0.3194139003753662
+      },
+      "transformation_time": 0.5890882015228271,
+      "write_time": 0.5987381935119629,
+      "end_time": 1768842830.848594,
+      "total_execution_time": 1.4788880348205566
+    },
+    "gold_layer": {
+      "experiment_name": "shuffle_only_run1",
+      "stage": "gold_layer",
+      "start_time": 1768842832.942079,
+      "end_time": 1768842835.9778292,
+      "transformation_time": 0.9958605766296387,
+      "write_time": 1.8034420013427734,
+      "total_execution_time": 3.035750150680542,
+      "query_metrics": [
+        {
+          "query": "day_to_day_sales.sql",
+          "transformation_time": 0.09188508987426758,
+          "result_count": 727,
+          "write_time": 0.34369826316833496
+        },
+        {
+          "query": "top_spenders.sql",
+          "transformation_time": 0.3731410503387451,
+          "result_count": 10,
+          "write_time": 0.2965219020843506
+        },
+        {
+          "query": "performance_analysis_by_country.sql",
+          "transformation_time": 0.22221016883850098,
+          "result_count": 243,
+          "write_time": 0.5162250995635986
+        },
+        {
+          "query": "sales_moving_average.sql",
+          "transformation_time": 0.07650923728942871,
+          "result_count": 727,
+          "write_time": 0.3240680694580078
+        },
+        {
+          "query": "top_products_by_category.sql",
+          "transformation_time": 0.2321150302886963,
+          "result_count": 47,
+          "write_time": 0.32292866706848145
+        }
+      ]
+    },
+    "total_transformation_time": 1.5849487781524658,
+    "total_time_with_io": 2.4021801948547363,
+    "total_time": 4.514638185501099,
+    "status": "success"
+  },
+  {
+    "experiment_name": "shuffle_only",
+    "run_number": 2,
+    "timestamp": "2026-01-19T18:13:58.504980",
+    "config": {
+      "name": "Shuffle Partitions Only",
+      "description": "Only optimize shuffle partitions for small dataset",
+      "optimizations": {
+        "shuffle_partitions": 8,
+        "enable_aqe": false,
+        "enable_caching": false,
+        "enable_coalesce": false,
+        "compression": "none",
+        "broadcast_threshold": 0
+      }
+    },
+    "silver_layer": {
+      "experiment_name": "shuffle_only_run2",
+      "stage": "silver_layer",
+      "start_time": 1768842838.505019,
+      "table_transform_times": {
+        "users": 0.1443171501159668,
+        "products": 0.12272381782531738,
+        "transactions": 0.32073426246643066
+      },
+      "table_row_counts": {
+        "users": 9700,
+        "products": 9700,
+        "transactions": 16422
+      },
+      "table_write_times": {
+        "users": 0.15071487426757812,
+        "products": 0.17381882667541504,
+        "transactions": 0.3799610137939453
+      },
+      "transformation_time": 0.5877752304077148,
+      "write_time": 0.7044947147369385,
+      "end_time": 1768842840.085064,
+      "total_execution_time": 1.5800449848175049
+    },
+    "gold_layer": {
+      "experiment_name": "shuffle_only_run2",
+      "stage": "gold_layer",
+      "start_time": 1768842842.588887,
+      "end_time": 1768842845.430262,
+      "transformation_time": 0.8687293529510498,
+      "write_time": 1.7954988479614258,
+      "total_execution_time": 2.8413751125335693,
+      "query_metrics": [
+        {
+          "query": "day_to_day_sales.sql",
+          "transformation_time": 0.09711217880249023,
+          "result_count": 727,
+          "write_time": 0.3528172969818115
+        },
+        {
+          "query": "top_spenders.sql",
+          "transformation_time": 0.26566505432128906,
+          "result_count": 10,
+          "write_time": 0.29819607734680176
+        },
+        {
+          "query": "performance_analysis_by_country.sql",
+          "transformation_time": 0.2246708869934082,
+          "result_count": 243,
+          "write_time": 0.5185098648071289
+        },
+        {
+          "query": "sales_moving_average.sql",
+          "transformation_time": 0.08067917823791504,
+          "result_count": 727,
+          "write_time": 0.3139986991882324
+        },
+        {
+          "query": "top_products_by_category.sql",
+          "transformation_time": 0.20060205459594727,
+          "result_count": 47,
+          "write_time": 0.31197690963745117
+        }
+      ]
+    },
+    "total_transformation_time": 1.4565045833587646,
+    "total_time_with_io": 2.4999935626983643,
+    "total_time": 4.421420097351074,
+    "status": "success"
+  },
+  {
+    "experiment_name": "shuffle_only",
+    "run_number": 3,
+    "timestamp": "2026-01-19T18:14:07.657201",
+    "config": {
+      "name": "Shuffle Partitions Only",
+      "description": "Only optimize shuffle partitions for small dataset",
+      "optimizations": {
+        "shuffle_partitions": 8,
+        "enable_aqe": false,
+        "enable_caching": false,
+        "enable_coalesce": false,
+        "compression": "none",
+        "broadcast_threshold": 0
+      }
+    },
+    "silver_layer": {
+      "experiment_name": "shuffle_only_run3",
+      "stage": "silver_layer",
+      "start_time": 1768842847.657233,
+      "table_transform_times": {
+        "users": 0.14281415939331055,
+        "products": 0.10597372055053711,
+        "transactions": 0.29894089698791504
+      },
+      "table_row_counts": {
+        "users": 9700,
+        "products": 9700,
+        "transactions": 16422
+      },
+      "table_write_times": {
+        "users": 0.17183899879455566,
+        "products": 0.13193297386169434,
+        "transactions": 0.4211699962615967
+      },
+      "transformation_time": 0.5477287769317627,
+      "write_time": 0.7249419689178467,
+      "end_time": 1768842849.221494,
+      "total_execution_time": 1.5642609596252441
+    },
+    "gold_layer": {
+      "experiment_name": "shuffle_only_run3",
+      "stage": "gold_layer",
+      "start_time": 1768842851.7166889,
+      "end_time": 1768842854.566015,
+      "transformation_time": 0.892261266708374,
+      "write_time": 1.7836484909057617,
+      "total_execution_time": 2.8493261337280273,
+      "query_metrics": [
+        {
+          "query": "day_to_day_sales.sql",
+          "transformation_time": 0.08656501770019531,
+          "result_count": 727,
+          "write_time": 0.33919310569763184
+        },
+        {
+          "query": "top_spenders.sql",
+          "transformation_time": 0.3226943016052246,
+          "result_count": 10,
+          "write_time": 0.2533121109008789
+        },
+        {
+          "query": "performance_analysis_by_country.sql",
+          "transformation_time": 0.21071100234985352,
+          "result_count": 243,
+          "write_time": 0.4803011417388916
+        },
+        {
+          "query": "sales_moving_average.sql",
+          "transformation_time": 0.07254815101623535,
+          "result_count": 727,
+          "write_time": 0.3502631187438965
+        },
+        {
+          "query": "top_products_by_category.sql",
+          "transformation_time": 0.19974279403686523,
+          "result_count": 47,
+          "write_time": 0.3605790138244629
+        }
+      ]
+    },
+    "total_transformation_time": 1.4399900436401367,
+    "total_time_with_io": 2.5085904598236084,
+    "total_time": 4.4135870933532715,
+    "status": "success"
+  },
+  {
+    "experiment_name": "aqe_only",
+    "run_number": 1,
+    "timestamp": "2026-01-19T18:14:16.789921",
+    "config": {
+      "name": "AQE Only",
+      "description": "Only enable Adaptive Query Execution",
+      "optimizations": {
+        "shuffle_partitions": 200,
+        "enable_aqe": true,
+        "enable_caching": false,
+        "enable_coalesce": false,
+        "compression": "none",
+        "broadcast_threshold": 0
+      }
+    },
+    "silver_layer": {
+      "experiment_name": "aqe_only_run1",
+      "stage": "silver_layer",
+      "start_time": 1768842856.7899818,
+      "table_transform_times": {
+        "users": 0.2045738697052002,
+        "products": 0.10996103286743164,
+        "transactions": 0.46506214141845703
+      },
+      "table_row_counts": {
+        "users": 9700,
+        "products": 9700,
+        "transactions": 16422
+      },
+      "table_write_times": {
+        "users": 0.15219402313232422,
+        "products": 0.1426551342010498,
+        "transactions": 0.4803779125213623
+      },
+      "transformation_time": 0.7795970439910889,
+      "write_time": 0.7752270698547363,
+      "end_time": 1768842858.636956,
+      "total_execution_time": 1.8469741344451904
+    },
+    "gold_layer": {
+      "experiment_name": "aqe_only_run1",
+      "stage": "gold_layer",
+      "start_time": 1768842860.866373,
+      "end_time": 1768842864.6821382,
+      "transformation_time": 1.2097079753875732,
+      "write_time": 2.416074275970459,
+      "total_execution_time": 3.815765142440796,
+      "query_metrics": [
+        {
+          "query": "day_to_day_sales.sql",
+          "transformation_time": 0.09173703193664551,
+          "result_count": 727,
+          "write_time": 0.48343706130981445
+        },
+        {
+          "query": "top_spenders.sql",
+          "transformation_time": 0.4087796211242676,
+          "result_count": 10,
+          "write_time": 0.4176981449127197
+        },
+        {
+          "query": "performance_analysis_by_country.sql",
+          "transformation_time": 0.3376021385192871,
+          "result_count": 243,
+          "write_time": 0.6523342132568359
+        },
+        {
+          "query": "sales_moving_average.sql",
+          "transformation_time": 0.07935905456542969,
+          "result_count": 727,
+          "write_time": 0.48830509185791016
+        },
+        {
+          "query": "top_products_by_category.sql",
+          "transformation_time": 0.29223012924194336,
+          "result_count": 47,
+          "write_time": 0.3742997646331787
+        }
+      ]
+    },
+    "total_transformation_time": 1.989305019378662,
+    "total_time_with_io": 3.1913013458251953,
+    "total_time": 5.662739276885986,
+    "status": "success"
+  },
+  {
+    "experiment_name": "aqe_only",
+    "run_number": 2,
+    "timestamp": "2026-01-19T18:14:26.948742",
+    "config": {
+      "name": "AQE Only",
+      "description": "Only enable Adaptive Query Execution",
+      "optimizations": {
+        "shuffle_partitions": 200,
+        "enable_aqe": true,
+        "enable_caching": false,
+        "enable_coalesce": false,
+        "compression": "none",
+        "broadcast_threshold": 0
+      }
+    },
+    "silver_layer": {
+      "experiment_name": "aqe_only_run2",
+      "stage": "silver_layer",
+      "start_time": 1768842866.9487622,
+      "table_transform_times": {
+        "users": 0.17441725730895996,
+        "products": 0.11732912063598633,
+        "transactions": 0.441007137298584
+      },
+      "table_row_counts": {
+        "users": 9700,
+        "products": 9700,
+        "transactions": 16422
+      },
+      "table_write_times": {
+        "users": 0.146392822265625,
+        "products": 0.17923212051391602,
+        "transactions": 0.4792940616607666
+      },
+      "transformation_time": 0.7327535152435303,
+      "write_time": 0.8049190044403076,
+      "end_time": 1768842868.766331,
+      "total_execution_time": 1.8175687789916992
+    },
+    "gold_layer": {
+      "experiment_name": "aqe_only_run2",
+      "stage": "gold_layer",
+      "start_time": 1768842871.0108101,
+      "end_time": 1768842874.6476429,
+      "transformation_time": 1.1312601566314697,
+      "write_time": 2.317098617553711,
+      "total_execution_time": 3.6368327140808105,
+      "query_metrics": [
+        {
+          "query": "day_to_day_sales.sql",
+          "transformation_time": 0.10318899154663086,
+          "result_count": 727,
+          "write_time": 0.49024367332458496
+        },
+        {
+          "query": "top_spenders.sql",
+          "transformation_time": 0.3581409454345703,
+          "result_count": 10,
+          "write_time": 0.4252288341522217
+        },
+        {
+          "query": "performance_analysis_by_country.sql",
+          "transformation_time": 0.3079080581665039,
+          "result_count": 243,
+          "write_time": 0.5988590717315674
+        },
+        {
+          "query": "sales_moving_average.sql",
+          "transformation_time": 0.06992793083190918,
+          "result_count": 727,
+          "write_time": 0.4530770778656006
+        },
+        {
+          "query": "top_products_by_category.sql",
+          "transformation_time": 0.29209423065185547,
+          "result_count": 47,
+          "write_time": 0.34968996047973633
+        }
+      ]
+    },
+    "total_transformation_time": 1.864013671875,
+    "total_time_with_io": 3.1220176219940186,
+    "total_time": 5.45440149307251,
+    "status": "success"
+  },
+  {
+    "experiment_name": "aqe_only",
+    "run_number": 3,
+    "timestamp": "2026-01-19T18:14:37.079567",
+    "config": {
+      "name": "AQE Only",
+      "description": "Only enable Adaptive Query Execution",
+      "optimizations": {
+        "shuffle_partitions": 200,
+        "enable_aqe": true,
+        "enable_caching": false,
+        "enable_coalesce": false,
+        "compression": "none",
+        "broadcast_threshold": 0
+      }
+    },
+    "silver_layer": {
+      "experiment_name": "aqe_only_run3",
+      "stage": "silver_layer",
+      "start_time": 1768842877.079734,
+      "table_transform_times": {
+        "users": 0.1431717872619629,
+        "products": 0.11712288856506348,
+        "transactions": 0.4324982166290283
+      },
+      "table_row_counts": {
+        "users": 9700,
+        "products": 9700,
+        "transactions": 16422
+      },
+      "table_write_times": {
+        "users": 0.1589951515197754,
+        "products": 0.14225101470947266,
+        "transactions": 0.4231727123260498
+      },
+      "transformation_time": 0.6927928924560547,
+      "write_time": 0.7244188785552979,
+      "end_time": 1768842878.780353,
+      "total_execution_time": 1.7006189823150635
+    },
+    "gold_layer": {
+      "experiment_name": "aqe_only_run3",
+      "stage": "gold_layer",
+      "start_time": 1768842881.141085,
+      "end_time": 1768842884.9496472,
+      "transformation_time": 1.2286772727966309,
+      "write_time": 2.3523151874542236,
+      "total_execution_time": 3.8085622787475586,
+      "query_metrics": [
+        {
+          "query": "day_to_day_sales.sql",
+          "transformation_time": 0.07937192916870117,
+          "result_count": 727,
+          "write_time": 0.5075500011444092
+        },
+        {
+          "query": "top_spenders.sql",
+          "transformation_time": 0.38545894622802734,
+          "result_count": 10,
+          "write_time": 0.3713829517364502
+        },
+        {
+          "query": "performance_analysis_by_country.sql",
+          "transformation_time": 0.34942102432250977,
+          "result_count": 243,
+          "write_time": 0.6022961139678955
+        },
+        {
+          "query": "sales_moving_average.sql",
+          "transformation_time": 0.08405423164367676,
+          "result_count": 727,
+          "write_time": 0.4161841869354248
+        },
+        {
+          "query": "top_products_by_category.sql",
+          "transformation_time": 0.3303711414337158,
+          "result_count": 47,
+          "write_time": 0.45490193367004395
+        }
+      ]
+    },
+    "total_transformation_time": 1.9214701652526855,
+    "total_time_with_io": 3.0767340660095215,
+    "total_time": 5.509181261062622,
+    "status": "success"
+  },
+  {
+    "experiment_name": "caching_only",
+    "run_number": 1,
+    "timestamp": "2026-01-19T18:14:47.209098",
+    "config": {
+      "name": "Caching Only",
+      "description": "Only enable DataFrame caching",
+      "optimizations": {
+        "shuffle_partitions": 200,
+        "enable_aqe": false,
+        "enable_caching": true,
+        "enable_coalesce": false,
+        "compression": "none",
+        "broadcast_threshold": 0
+      }
+    },
+    "silver_layer": {
+      "experiment_name": "caching_only_run1",
+      "stage": "silver_layer",
+      "start_time": 1768842887.209114,
+      "table_transform_times": {
+        "users": 0.26049304008483887,
+        "products": 0.1307210922241211,
+        "transactions": 3.1324048042297363
+      },
+      "table_row_counts": {
+        "users": 9700,
+        "products": 9700,
+        "transactions": 16422
+      },
+      "table_write_times": {
+        "users": 0.15670490264892578,
+        "products": 0.12097835540771484,
+        "transactions": 5.424079895019531
+      },
+      "transformation_time": 3.5236189365386963,
+      "write_time": 5.701763153076172,
+      "end_time": 1768842896.7080011,
+      "total_execution_time": 9.498887062072754
+    },
+    "gold_layer": {
+      "experiment_name": "caching_only_run1",
+      "stage": "gold_layer",
+      "start_time": 1768842899.283564,
+      "end_time": 1768842943.559955,
+      "transformation_time": 13.123267412185669,
+      "write_time": 30.705432415008545,
+      "total_execution_time": 44.27639079093933,
+      "query_metrics": [
+        {
+          "query": "day_to_day_sales.sql",
+          "transformation_time": 0.08073067665100098,
+          "result_count": 727,
+          "write_time": 4.762685060501099
+        },
+        {
+          "query": "top_spenders.sql",
+          "transformation_time": 5.439029693603516,
+          "result_count": 10,
+          "write_time": 5.34840202331543
+        },
+        {
+          "query": "performance_analysis_by_country.sql",
+          "transformation_time": 5.082403898239136,
+          "result_count": 243,
+          "write_time": 12.451879262924194
+        },
+        {
+          "query": "sales_moving_average.sql",
+          "transformation_time": 0.09086489677429199,
+          "result_count": 727,
+          "write_time": 5.108362197875977
+        },
+        {
+          "query": "top_products_by_category.sql",
+          "transformation_time": 2.4302382469177246,
+          "result_count": 47,
+          "write_time": 3.0341038703918457
+        }
+      ]
+    },
+    "total_transformation_time": 16.646886348724365,
+    "total_time_with_io": 36.40719556808472,
+    "total_time": 53.775277853012085,
+    "status": "success"
+  },
+  {
+    "experiment_name": "caching_only",
+    "run_number": 2,
+    "timestamp": "2026-01-19T18:15:45.986397",
+    "config": {
+      "name": "Caching Only",
+      "description": "Only enable DataFrame caching",
+      "optimizations": {
+        "shuffle_partitions": 200,
+        "enable_aqe": false,
+        "enable_caching": true,
+        "enable_coalesce": false,
+        "compression": "none",
+        "broadcast_threshold": 0
+      }
+    },
+    "silver_layer": {
+      "experiment_name": "caching_only_run2",
+      "stage": "silver_layer",
+      "start_time": 1768842945.986571,
+      "table_transform_times": {
+        "users": 0.17985105514526367,
+        "products": 0.11491799354553223,
+        "transactions": 3.0438990592956543
+      },
+      "table_row_counts": {
+        "users": 9700,
+        "products": 9700,
+        "transactions": 16422
+      },
+      "table_write_times": {
+        "users": 0.13644719123840332,
+        "products": 0.10340476036071777,
+        "transactions": 5.212957859039307
+      },
+      "transformation_time": 3.33866810798645,
+      "write_time": 5.452809810638428,
+      "end_time": 1768842955.044659,
+      "total_execution_time": 9.058087825775146
+    },
+    "gold_layer": {
+      "experiment_name": "caching_only_run2",
+      "stage": "gold_layer",
+      "start_time": 1768842957.578088,
+      "end_time": 1768843001.461851,
+      "transformation_time": 13.321182012557983,
+      "write_time": 30.140559196472168,
+      "total_execution_time": 43.8837628364563,
+      "query_metrics": [
+        {
+          "query": "day_to_day_sales.sql",
+          "transformation_time": 0.0797109603881836,
+          "result_count": 727,
+          "write_time": 4.759067058563232
+        },
+        {
+          "query": "top_spenders.sql",
+          "transformation_time": 5.446846008300781,
+          "result_count": 10,
+          "write_time": 5.414994955062866
+        },
+        {
+          "query": "performance_analysis_by_country.sql",
+          "transformation_time": 5.328709840774536,
+          "result_count": 243,
+          "write_time": 12.300920248031616
+        },
+        {
+          "query": "sales_moving_average.sql",
+          "transformation_time": 0.07985615730285645,
+          "result_count": 727,
+          "write_time": 4.917222023010254
+        },
+        {
+          "query": "top_products_by_category.sql",
+          "transformation_time": 2.386059045791626,
+          "result_count": 47,
+          "write_time": 2.748354911804199
+        }
+      ]
+    },
+    "total_transformation_time": 16.659850120544434,
+    "total_time_with_io": 35.593369007110596,
+    "total_time": 52.941850662231445,
+    "status": "success"
+  },
+  {
+    "experiment_name": "caching_only",
+    "run_number": 3,
+    "timestamp": "2026-01-19T18:16:43.771743",
+    "config": {
+      "name": "Caching Only",
+      "description": "Only enable DataFrame caching",
+      "optimizations": {
+        "shuffle_partitions": 200,
+        "enable_aqe": false,
+        "enable_caching": true,
+        "enable_coalesce": false,
+        "compression": "none",
+        "broadcast_threshold": 0
+      }
+    },
+    "silver_layer": {
+      "experiment_name": "caching_only_run3",
+      "stage": "silver_layer",
+      "start_time": 1768843003.7718132,
+      "table_transform_times": {
+        "users": 0.18216824531555176,
+        "products": 0.10538101196289062,
+        "transactions": 3.085031032562256
+      },
+      "table_row_counts": {
+        "users": 9700,
+        "products": 9700,
+        "transactions": 16422
+      },
+      "table_write_times": {
+        "users": 0.12401366233825684,
+        "products": 0.10443782806396484,
+        "transactions": 4.989656925201416
+      },
+      "transformation_time": 3.3725802898406982,
+      "write_time": 5.218108415603638,
+      "end_time": 1768843012.625091,
+      "total_execution_time": 8.853277921676636
+    },
+    "gold_layer": {
+      "experiment_name": "caching_only_run3",
+      "stage": "gold_layer",
+      "start_time": 1768843015.34829,
+      "end_time": 1768843058.532501,
+      "transformation_time": 13.272328853607178,
+      "write_time": 29.551095247268677,
+      "total_execution_time": 43.184211015701294,
+      "query_metrics": [
+        {
+          "query": "day_to_day_sales.sql",
+          "transformation_time": 0.07204318046569824,
+          "result_count": 727,
+          "write_time": 4.623211145401001
+        },
+        {
+          "query": "top_spenders.sql",
+          "transformation_time": 5.328992128372192,
+          "result_count": 10,
+          "write_time": 5.30506706237793
+        },
+        {
+          "query": "performance_analysis_by_country.sql",
+          "transformation_time": 5.412663698196411,
+          "result_count": 243,
+          "write_time": 12.021029949188232
+        },
+        {
+          "query": "sales_moving_average.sql",
+          "transformation_time": 0.0694417953491211,
+          "result_count": 727,
+          "write_time": 4.912532091140747
+        },
+        {
+          "query": "top_products_by_category.sql",
+          "transformation_time": 2.389188051223755,
+          "result_count": 47,
+          "write_time": 2.6892549991607666
+        }
+      ]
+    },
+    "total_transformation_time": 16.644909143447876,
+    "total_time_with_io": 34.769203662872314,
+    "total_time": 52.03748893737793,
+    "status": "success"
+  },
+  {
+    "experiment_name": "compression_only",
+    "run_number": 1,
+    "timestamp": "2026-01-19T18:17:41.021324",
+    "config": {
+      "name": "Compression Only",
+      "description": "Only enable Snappy compression",
+      "optimizations": {
+        "shuffle_partitions": 200,
+        "enable_aqe": false,
+        "enable_caching": false,
+        "enable_coalesce": false,
+        "compression": "snappy",
+        "broadcast_threshold": 0
+      }
+    },
+    "silver_layer": {
+      "experiment_name": "compression_only_run1",
+      "stage": "silver_layer",
+      "start_time": 1768843061.021406,
+      "table_transform_times": {
+        "users": 0.13577961921691895,
+        "products": 0.09689593315124512,
+        "transactions": 3.6194040775299072
+      },
+      "table_row_counts": {
+        "users": 9700,
+        "products": 9700,
+        "transactions": 16422
+      },
+      "table_write_times": {
+        "users": 0.14068984985351562,
+        "products": 0.12443685531616211,
+        "transactions": 5.047656059265137
+      },
+      "transformation_time": 3.8520796298980713,
+      "write_time": 5.3127827644348145,
+      "end_time": 1768843070.433614,
+      "total_execution_time": 9.412208080291748
+    },
+    "gold_layer": {
+      "experiment_name": "compression_only_run1",
+      "stage": "gold_layer",
+      "start_time": 1768843073.097247,
+      "end_time": 1768843116.335721,
+      "transformation_time": 13.285836935043335,
+      "write_time": 29.780660390853882,
+      "total_execution_time": 43.23847413063049,
+      "query_metrics": [
+        {
+          "query": "day_to_day_sales.sql",
+          "transformation_time": 0.11458683013916016,
+          "result_count": 727,
+          "write_time": 4.746714115142822
+        },
+        {
+          "query": "top_spenders.sql",
+          "transformation_time": 5.255439043045044,
+          "result_count": 10,
+          "write_time": 5.3257739543914795
+        },
+        {
+          "query": "performance_analysis_by_country.sql",
+          "transformation_time": 5.233156204223633,
+          "result_count": 243,
+          "write_time": 12.16977310180664
+        },
+        {
+          "query": "sales_moving_average.sql",
+          "transformation_time": 0.11849379539489746,
+          "result_count": 727,
+          "write_time": 4.901210069656372
+        },
+        {
+          "query": "top_products_by_category.sql",
+          "transformation_time": 2.5641610622406006,
+          "result_count": 47,
+          "write_time": 2.6371891498565674
+        }
+      ]
+    },
+    "total_transformation_time": 17.137916564941406,
+    "total_time_with_io": 35.093443155288696,
+    "total_time": 52.65068221092224,
+    "status": "success"
+  },
+  {
+    "experiment_name": "compression_only",
+    "run_number": 2,
+    "timestamp": "2026-01-19T18:18:38.760111",
+    "config": {
+      "name": "Compression Only",
+      "description": "Only enable Snappy compression",
+      "optimizations": {
+        "shuffle_partitions": 200,
+        "enable_aqe": false,
+        "enable_caching": false,
+        "enable_coalesce": false,
+        "compression": "snappy",
+        "broadcast_threshold": 0
+      }
+    },
+    "silver_layer": {
+      "experiment_name": "compression_only_run2",
+      "stage": "silver_layer",
+      "start_time": 1768843118.760179,
+      "table_transform_times": {
+        "users": 0.14602231979370117,
+        "products": 0.09954619407653809,
+        "transactions": 3.097905158996582
+      },
+      "table_row_counts": {
+        "users": 9700,
+        "products": 9700,
+        "transactions": 16422
+      },
+      "table_write_times": {
+        "users": 0.14858603477478027,
+        "products": 0.12455224990844727,
+        "transactions": 5.256793022155762
+      },
+      "transformation_time": 3.3434736728668213,
+      "write_time": 5.529931306838989,
+      "end_time": 1768843127.891424,
+      "total_execution_time": 9.131244897842407
+    },
+    "gold_layer": {
+      "experiment_name": "compression_only_run2",
+      "stage": "gold_layer",
+      "start_time": 1768843130.349545,
+      "end_time": 1768843173.35768,
+      "transformation_time": 12.903059005737305,
+      "write_time": 29.914990186691284,
+      "total_execution_time": 43.008135080337524,
+      "query_metrics": [
+        {
+          "query": "day_to_day_sales.sql",
+          "transformation_time": 0.11609005928039551,
+          "result_count": 727,
+          "write_time": 4.695685148239136
+        },
+        {
+          "query": "top_spenders.sql",
+          "transformation_time": 5.042769908905029,
+          "result_count": 10,
+          "write_time": 5.0688159465789795
+        },
+        {
+          "query": "performance_analysis_by_country.sql",
+          "transformation_time": 5.068266868591309,
+          "result_count": 243,
+          "write_time": 12.523555994033813
+        },
+        {
+          "query": "sales_moving_average.sql",
+          "transformation_time": 0.1048119068145752,
+          "result_count": 727,
+          "write_time": 4.983098030090332
+        },
+        {
+          "query": "top_products_by_category.sql",
+          "transformation_time": 2.571120262145996,
+          "result_count": 47,
+          "write_time": 2.6438350677490234
+        }
+      ]
+    },
+    "total_transformation_time": 16.246532678604126,
+    "total_time_with_io": 35.44492149353027,
+    "total_time": 52.13937997817993,
+    "status": "success"
+  },
+  {
+    "experiment_name": "compression_only",
+    "run_number": 3,
+    "timestamp": "2026-01-19T18:19:35.586022",
+    "config": {
+      "name": "Compression Only",
+      "description": "Only enable Snappy compression",
+      "optimizations": {
+        "shuffle_partitions": 200,
+        "enable_aqe": false,
+        "enable_caching": false,
+        "enable_coalesce": false,
+        "compression": "snappy",
+        "broadcast_threshold": 0
+      }
+    },
+    "silver_layer": {
+      "experiment_name": "compression_only_run3",
+      "stage": "silver_layer",
+      "start_time": 1768843175.58608,
+      "table_transform_times": {
+        "users": 0.1563279628753662,
+        "products": 0.10039901733398438,
+        "transactions": 3.1386399269104004
+      },
+      "table_row_counts": {
+        "users": 9700,
+        "products": 9700,
+        "transactions": 16422
+      },
+      "table_write_times": {
+        "users": 0.16011595726013184,
+        "products": 0.1352558135986328,
+        "transactions": 5.300857067108154
+      },
+      "transformation_time": 3.395366907119751,
+      "write_time": 5.596228837966919,
+      "end_time": 1768843184.844044,
+      "total_execution_time": 9.25796389579773
+    },
+    "gold_layer": {
+      "experiment_name": "compression_only_run3",
+      "stage": "gold_layer",
+      "start_time": 1768843187.1810071,
+      "end_time": 1768843230.117781,
+      "transformation_time": 12.486382484436035,
+      "write_time": 30.26100730895996,
+      "total_execution_time": 42.93677377700806,
+      "query_metrics": [
+        {
+          "query": "day_to_day_sales.sql",
+          "transformation_time": 0.1181187629699707,
+          "result_count": 727,
+          "write_time": 4.968756914138794
+        },
+        {
+          "query": "top_spenders.sql",
+          "transformation_time": 5.152863025665283,
+          "result_count": 10,
+          "write_time": 5.122523784637451
+        },
+        {
+          "query": "performance_analysis_by_country.sql",
+          "transformation_time": 4.875518083572388,
+          "result_count": 243,
+          "write_time": 12.488847732543945
+        },
+        {
+          "query": "sales_moving_average.sql",
+          "transformation_time": 0.10733485221862793,
+          "result_count": 727,
+          "write_time": 5.083856821060181
+        },
+        {
+          "query": "top_products_by_category.sql",
+          "transformation_time": 2.2325477600097656,
+          "result_count": 47,
+          "write_time": 2.59702205657959
+        }
+      ]
+    },
+    "total_transformation_time": 15.881749391555786,
+    "total_time_with_io": 35.85723614692688,
+    "total_time": 52.194737672805786,
+    "status": "success"
+  },
+  {
+    "experiment_name": "broadcast_only",
+    "run_number": 1,
+    "timestamp": "2026-01-19T18:20:32.382489",
+    "config": {
+      "name": "Broadcast Only",
+      "description": "Only enable auto-broadcast joins",
+      "optimizations": {
+        "shuffle_partitions": 200,
+        "enable_aqe": false,
+        "enable_caching": false,
+        "enable_coalesce": false,
+        "compression": "none",
+        "broadcast_threshold": 10485760
+      }
+    },
+    "silver_layer": {
+      "experiment_name": "broadcast_only_run1",
+      "stage": "silver_layer",
+      "start_time": 1768843232.3825788,
+      "table_transform_times": {
+        "users": 0.14708209037780762,
+        "products": 0.09942030906677246,
+        "transactions": 0.5128939151763916
+      },
+      "table_row_counts": {
+        "users": 9700,
+        "products": 9700,
+        "transactions": 16422
+      },
+      "table_write_times": {
+        "users": 0.14453887939453125,
+        "products": 0.13036203384399414,
+        "transactions": 0.49918127059936523
+      },
+      "transformation_time": 0.7593963146209717,
+      "write_time": 0.7740821838378906,
+      "end_time": 1768843234.1738582,
+      "total_execution_time": 1.7912793159484863
+    },
+    "gold_layer": {
+      "experiment_name": "broadcast_only_run1",
+      "stage": "gold_layer",
+      "start_time": 1768843236.441369,
+      "end_time": 1768843246.2937942,
+      "transformation_time": 2.0110251903533936,
+      "write_time": 7.665601015090942,
+      "total_execution_time": 9.85242509841919,
+      "query_metrics": [
+        {
+          "query": "day_to_day_sales.sql",
+          "transformation_time": 0.07574319839477539,
+          "result_count": 727,
+          "write_time": 0.23010683059692383
+        },
+        {
+          "query": "top_spenders.sql",
+          "transformation_time": 0.42259788513183594,
+          "result_count": 10,
+          "write_time": 0.4399600028991699
+        },
+        {
+          "query": "performance_analysis_by_country.sql",
+          "transformation_time": 0.4261009693145752,
+          "result_count": 243,
+          "write_time": 5.325333118438721
+        },
+        {
+          "query": "sales_moving_average.sql",
+          "transformation_time": 0.062429189682006836,
+          "result_count": 727,
+          "write_time": 0.18932390213012695
+        },
+        {
+          "query": "top_products_by_category.sql",
+          "transformation_time": 1.0241539478302002,
+          "result_count": 47,
+          "write_time": 1.480877161026001
+        }
+      ]
+    },
+    "total_transformation_time": 2.7704215049743652,
+    "total_time_with_io": 8.439683198928833,
+    "total_time": 11.643704414367676,
+    "status": "success"
+  },
+  {
+    "experiment_name": "broadcast_only",
+    "run_number": 2,
+    "timestamp": "2026-01-19T18:20:48.526856",
+    "config": {
+      "name": "Broadcast Only",
+      "description": "Only enable auto-broadcast joins",
+      "optimizations": {
+        "shuffle_partitions": 200,
+        "enable_aqe": false,
+        "enable_caching": false,
+        "enable_coalesce": false,
+        "compression": "none",
+        "broadcast_threshold": 10485760
+      }
+    },
+    "silver_layer": {
+      "experiment_name": "broadcast_only_run2",
+      "stage": "silver_layer",
+      "start_time": 1768843248.527092,
+      "table_transform_times": {
+        "users": 0.13522791862487793,
+        "products": 0.09766793251037598,
+        "transactions": 0.4668312072753906
+      },
+      "table_row_counts": {
+        "users": 9700,
+        "products": 9700,
+        "transactions": 16422
+      },
+      "table_write_times": {
+        "users": 0.15856599807739258,
+        "products": 0.13797593116760254,
+        "transactions": 0.4196748733520508
+      },
+      "transformation_time": 0.6997270584106445,
+      "write_time": 0.7162168025970459,
+      "end_time": 1768843250.2180421,
+      "total_execution_time": 1.6909501552581787
+    },
+    "gold_layer": {
+      "experiment_name": "broadcast_only_run2",
+      "stage": "gold_layer",
+      "start_time": 1768843252.603273,
+      "end_time": 1768843261.903697,
+      "transformation_time": 1.8212199211120605,
+      "write_time": 7.298669338226318,
+      "total_execution_time": 9.300424098968506,
+      "query_metrics": [
+        {
+          "query": "day_to_day_sales.sql",
+          "transformation_time": 0.07026791572570801,
+          "result_count": 727,
+          "write_time": 0.1944582462310791
+        },
+        {
+          "query": "top_spenders.sql",
+          "transformation_time": 0.3816111087799072,
+          "result_count": 10,
+          "write_time": 0.44320106506347656
+        },
+        {
+          "query": "performance_analysis_by_country.sql",
+          "transformation_time": 0.43706178665161133,
+          "result_count": 243,
+          "write_time": 5.086940288543701
+        },
+        {
+          "query": "sales_moving_average.sql",
+          "transformation_time": 0.047616004943847656,
+          "result_count": 727,
+          "write_time": 0.22425079345703125
+        },
+        {
+          "query": "top_products_by_category.sql",
+          "transformation_time": 0.8846631050109863,
+          "result_count": 47,
+          "write_time": 1.3498189449310303
+        }
+      ]
+    },
+    "total_transformation_time": 2.520946979522705,
+    "total_time_with_io": 8.014886140823364,
+    "total_time": 10.991374254226685,
+    "status": "success"
+  },
+  {
+    "experiment_name": "broadcast_only",
+    "run_number": 3,
+    "timestamp": "2026-01-19T18:21:04.193878",
+    "config": {
+      "name": "Broadcast Only",
+      "description": "Only enable auto-broadcast joins",
+      "optimizations": {
+        "shuffle_partitions": 200,
+        "enable_aqe": false,
+        "enable_caching": false,
+        "enable_coalesce": false,
+        "compression": "none",
+        "broadcast_threshold": 10485760
+      }
+    },
+    "silver_layer": {
+      "experiment_name": "broadcast_only_run3",
+      "stage": "silver_layer",
+      "start_time": 1768843264.194067,
+      "table_transform_times": {
+        "users": 0.14462995529174805,
+        "products": 0.10835695266723633,
+        "transactions": 0.4263310432434082
+      },
+      "table_row_counts": {
+        "users": 9700,
+        "products": 9700,
+        "transactions": 16422
+      },
+      "table_write_times": {
+        "users": 0.14310288429260254,
+        "products": 0.11899018287658691,
+        "transactions": 0.4083282947540283
+      },
+      "transformation_time": 0.6793179512023926,
+      "write_time": 0.6704213619232178,
+      "end_time": 1768843265.8842502,
+      "total_execution_time": 1.690183162689209
+    },
+    "gold_layer": {
+      "experiment_name": "broadcast_only_run3",
+      "stage": "gold_layer",
+      "start_time": 1768843268.283536,
+      "end_time": 1768843277.985116,
+      "transformation_time": 1.8972299098968506,
+      "write_time": 7.646204233169556,
+      "total_execution_time": 9.701580047607422,
+      "query_metrics": [
+        {
+          "query": "day_to_day_sales.sql",
+          "transformation_time": 0.06409907341003418,
+          "result_count": 727,
+          "write_time": 0.18328619003295898
+        },
+        {
+          "query": "top_spenders.sql",
+          "transformation_time": 0.3745739459991455,
+          "result_count": 10,
+          "write_time": 0.39833903312683105
+        },
+        {
+          "query": "performance_analysis_by_country.sql",
+          "transformation_time": 0.372905969619751,
+          "result_count": 243,
+          "write_time": 5.391370058059692
+        },
+        {
+          "query": "sales_moving_average.sql",
+          "transformation_time": 0.046231746673583984,
+          "result_count": 727,
+          "write_time": 0.17874383926391602
+        },
+        {
+          "query": "top_products_by_category.sql",
+          "transformation_time": 1.039419174194336,
+          "result_count": 47,
+          "write_time": 1.4944651126861572
+        }
+      ]
+    },
+    "total_transformation_time": 2.576547861099243,
+    "total_time_with_io": 8.316625595092773,
+    "total_time": 11.39176321029663,
+    "status": "success"
+  },
+  {
+    "experiment_name": "partitioning_only",
+    "run_number": 1,
+    "timestamp": "2026-01-19T18:21:20.367192",
+    "config": {
+      "name": "Partitioning Only",
+      "description": "Only enable partitioning by category",
+      "optimizations": {
+        "shuffle_partitions": 200,
+        "enable_aqe": false,
+        "enable_caching": false,
+        "enable_coalesce": false,
+        "compression": "none",
+        "broadcast_threshold": 0,
+        "enable_partitioning": true,
+        "partition_column": "category"
+      }
+    },
+    "silver_layer": {
+      "experiment_name": "partitioning_only_run1",
+      "stage": "silver_layer",
+      "start_time": 1768843280.367386,
+      "table_transform_times": {
+        "users": 0.15980315208435059,
+        "products": 0.10672998428344727,
+        "transactions": 3.2835330963134766
+      },
+      "table_row_counts": {
+        "users": 9700,
+        "products": 9700,
+        "transactions": 16422
+      },
+      "table_write_times": {
+        "users": 0.178009033203125,
+        "products": 0.34459805488586426,
+        "transactions": 5.064375877380371
+      },
+      "transformation_time": 3.5500662326812744,
+      "write_time": 5.58698296546936,
+      "end_time": 1768843289.802537,
+      "total_execution_time": 9.435150861740112
+    },
+    "gold_layer": {
+      "experiment_name": "partitioning_only_run1",
+      "stage": "gold_layer",
+      "start_time": 1768843292.471466,
+      "end_time": 1768843338.467066,
+      "transformation_time": 13.810529470443726,
+      "write_time": 31.961865663528442,
+      "total_execution_time": 45.99559998512268,
+      "query_metrics": [
+        {
+          "query": "day_to_day_sales.sql",
+          "transformation_time": 0.10872817039489746,
+          "result_count": 727,
+          "write_time": 5.139809608459473
+        },
+        {
+          "query": "top_spenders.sql",
+          "transformation_time": 5.506694078445435,
+          "result_count": 10,
+          "write_time": 5.8180389404296875
+        },
+        {
+          "query": "performance_analysis_by_country.sql",
+          "transformation_time": 5.467051029205322,
+          "result_count": 243,
+          "write_time": 12.301980018615723
+        },
+        {
+          "query": "sales_moving_average.sql",
+          "transformation_time": 0.1144709587097168,
+          "result_count": 727,
+          "write_time": 5.323487997055054
+        },
+        {
+          "query": "top_products_by_category.sql",
+          "transformation_time": 2.6135852336883545,
+          "result_count": 47,
+          "write_time": 3.378549098968506
+        }
+      ]
+    },
+    "total_transformation_time": 17.360595703125,
+    "total_time_with_io": 37.5488486289978,
+    "total_time": 55.43075084686279,
+    "status": "success"
+  },
+  {
+    "experiment_name": "partitioning_only",
+    "run_number": 2,
+    "timestamp": "2026-01-19T18:22:21.165550",
+    "config": {
+      "name": "Partitioning Only",
+      "description": "Only enable partitioning by category",
+      "optimizations": {
+        "shuffle_partitions": 200,
+        "enable_aqe": false,
+        "enable_caching": false,
+        "enable_coalesce": false,
+        "compression": "none",
+        "broadcast_threshold": 0,
+        "enable_partitioning": true,
+        "partition_column": "category"
+      }
+    },
+    "silver_layer": {
+      "experiment_name": "partitioning_only_run2",
+      "stage": "silver_layer",
+      "start_time": 1768843341.165695,
+      "table_transform_times": {
+        "users": 0.14429593086242676,
+        "products": 0.1222982406616211,
+        "transactions": 3.282425880432129
+      },
+      "table_row_counts": {
+        "users": 9700,
+        "products": 9700,
+        "transactions": 16422
+      },
+      "table_write_times": {
+        "users": 0.16567564010620117,
+        "products": 0.34442710876464844,
+        "transactions": 5.130620002746582
+      },
+      "transformation_time": 3.5490200519561768,
+      "write_time": 5.640722751617432,
+      "end_time": 1768843350.636493,
+      "total_execution_time": 9.470798015594482
+    },
+    "gold_layer": {
+      "experiment_name": "partitioning_only_run2",
+      "stage": "gold_layer",
+      "start_time": 1768843353.247652,
+      "end_time": 1768843399.039165,
+      "transformation_time": 14.073310613632202,
+      "write_time": 31.53851580619812,
+      "total_execution_time": 45.791512966156006,
+      "query_metrics": [
+        {
+          "query": "day_to_day_sales.sql",
+          "transformation_time": 0.10307502746582031,
+          "result_count": 727,
+          "write_time": 5.028117895126343
+        },
+        {
+          "query": "top_spenders.sql",
+          "transformation_time": 5.535612106323242,
+          "result_count": 10,
+          "write_time": 5.728734016418457
+        },
+        {
+          "query": "performance_analysis_by_country.sql",
+          "transformation_time": 5.572879076004028,
+          "result_count": 243,
+          "write_time": 12.259968996047974
+        },
+        {
+          "query": "sales_moving_average.sql",
+          "transformation_time": 0.13530707359313965,
+          "result_count": 727,
+          "write_time": 5.434017896652222
+        },
+        {
+          "query": "top_products_by_category.sql",
+          "transformation_time": 2.7264373302459717,
+          "result_count": 47,
+          "write_time": 3.087677001953125
+        }
+      ]
+    },
+    "total_transformation_time": 17.62233066558838,
+    "total_time_with_io": 37.17923855781555,
+    "total_time": 55.26231098175049,
+    "status": "success"
+  },
+  {
+    "experiment_name": "partitioning_only",
+    "run_number": 3,
+    "timestamp": "2026-01-19T18:23:21.450702",
+    "config": {
+      "name": "Partitioning Only",
+      "description": "Only enable partitioning by category",
+      "optimizations": {
+        "shuffle_partitions": 200,
+        "enable_aqe": false,
+        "enable_caching": false,
+        "enable_coalesce": false,
+        "compression": "none",
+        "broadcast_threshold": 0,
+        "enable_partitioning": true,
+        "partition_column": "category"
+      }
+    },
+    "silver_layer": {
+      "experiment_name": "partitioning_only_run3",
+      "stage": "silver_layer",
+      "start_time": 1768843401.450791,
+      "table_transform_times": {
+        "users": 0.13532805442810059,
+        "products": 0.09609103202819824,
+        "transactions": 3.623102903366089
+      },
+      "table_row_counts": {
+        "users": 9700,
+        "products": 9700,
+        "transactions": 16422
+      },
+      "table_write_times": {
+        "users": 0.1471090316772461,
+        "products": 0.29601097106933594,
+        "transactions": 5.089711904525757
+      },
+      "transformation_time": 3.8545219898223877,
+      "write_time": 5.532831907272339,
+      "end_time": 1768843411.115137,
+      "total_execution_time": 9.66434621810913
+    },
+    "gold_layer": {
+      "experiment_name": "partitioning_only_run3",
+      "stage": "gold_layer",
+      "start_time": 1768843413.539399,
+      "end_time": 1768843459.333499,
+      "transformation_time": 14.279374361038208,
+      "write_time": 31.30325222015381,
+      "total_execution_time": 45.79410004615784,
+      "query_metrics": [
+        {
+          "query": "day_to_day_sales.sql",
+          "transformation_time": 0.12369799613952637,
+          "result_count": 727,
+          "write_time": 5.347678899765015
+        },
+        {
+          "query": "top_spenders.sql",
+          "transformation_time": 5.553615093231201,
+          "result_count": 10,
+          "write_time": 5.493584156036377
+        },
+        {
+          "query": "performance_analysis_by_country.sql",
+          "transformation_time": 5.726485013961792,
+          "result_count": 243,
+          "write_time": 12.294184923171997
+        },
+        {
+          "query": "sales_moving_average.sql",
+          "transformation_time": 0.10263419151306152,
+          "result_count": 727,
+          "write_time": 4.99724006652832
+        },
+        {
+          "query": "top_products_by_category.sql",
+          "transformation_time": 2.772942066192627,
+          "result_count": 47,
+          "write_time": 3.1705641746520996
+        }
+      ]
+    },
+    "total_transformation_time": 18.133896350860596,
+    "total_time_with_io": 36.83608412742615,
+    "total_time": 55.45844626426697,
+    "status": "success"
+  },
+  {
+    "experiment_name": "all_optimizations",
+    "run_number": 1,
+    "timestamp": "2026-01-19T18:24:21.735734",
+    "config": {
+      "name": "All Optimizations",
+      "description": "All optimizations enabled",
+      "optimizations": {
+        "shuffle_partitions": 8,
+        "enable_aqe": true,
+        "enable_caching": true,
+        "enable_coalesce": true,
+        "compression": "snappy",
+        "broadcast_threshold": 10485760,
+        "enable_partitioning": true,
+        "partition_column": "category"
+      }
+    },
+    "silver_layer": {
+      "experiment_name": "all_optimizations_run1",
+      "stage": "silver_layer",
+      "start_time": 1768843461.7357912,
+      "table_transform_times": {
+        "users": 0.28662776947021484,
+        "products": 0.12135887145996094,
+        "transactions": 0.2634298801422119
+      },
+      "table_row_counts": {
+        "users": 9700,
+        "products": 9700,
+        "transactions": 16422
+      },
+      "table_write_times": {
+        "users": 0.1517329216003418,
+        "products": 0.31345319747924805,
+        "transactions": 0.1927497386932373
+      },
+      "transformation_time": 0.6714165210723877,
+      "write_time": 0.6579358577728271,
+      "end_time": 1768843463.3213692,
+      "total_execution_time": 1.5855779647827148
+    },
+    "gold_layer": {
+      "experiment_name": "all_optimizations_run1",
+      "stage": "gold_layer",
+      "start_time": 1768843465.788385,
+      "end_time": 1768843467.882354,
+      "transformation_time": 0.5908219814300537,
+      "write_time": 1.1261169910430908,
+      "total_execution_time": 2.0939691066741943,
+      "query_metrics": [
+        {
+          "query": "day_to_day_sales.sql",
+          "transformation_time": 0.10405898094177246,
+          "result_count": 727,
+          "write_time": 0.20469379425048828
+        },
+        {
+          "query": "top_spenders.sql",
+          "transformation_time": 0.17519402503967285,
+          "result_count": 10,
+          "write_time": 0.1714160442352295
+        },
+        {
+          "query": "performance_analysis_by_country.sql",
+          "transformation_time": 0.09925723075866699,
+          "result_count": 243,
+          "write_time": 0.3000619411468506
+        },
+        {
+          "query": "sales_moving_average.sql",
+          "transformation_time": 0.0436248779296875,
+          "result_count": 727,
+          "write_time": 0.16301703453063965
+        },
+        {
+          "query": "top_products_by_category.sql",
+          "transformation_time": 0.1686868667602539,
+          "result_count": 47,
+          "write_time": 0.2869281768798828
+        }
+      ]
+    },
+    "total_transformation_time": 1.2622385025024414,
+    "total_time_with_io": 1.784052848815918,
+    "total_time": 3.679547071456909,
+    "status": "success"
+  },
+  {
+    "experiment_name": "all_optimizations",
+    "run_number": 2,
+    "timestamp": "2026-01-19T18:24:30.341105",
+    "config": {
+      "name": "All Optimizations",
+      "description": "All optimizations enabled",
+      "optimizations": {
+        "shuffle_partitions": 8,
+        "enable_aqe": true,
+        "enable_caching": true,
+        "enable_coalesce": true,
+        "compression": "snappy",
+        "broadcast_threshold": 10485760,
+        "enable_partitioning": true,
+        "partition_column": "category"
+      }
+    },
+    "silver_layer": {
+      "experiment_name": "all_optimizations_run2",
+      "stage": "silver_layer",
+      "start_time": 1768843470.341115,
+      "table_transform_times": {
+        "users": 0.1736760139465332,
+        "products": 0.14332318305969238,
+        "transactions": 0.1776280403137207
+      },
+      "table_row_counts": {
+        "users": 9700,
+        "products": 9700,
+        "transactions": 16422
+      },
+      "table_write_times": {
+        "users": 0.11046814918518066,
+        "products": 0.28315091133117676,
+        "transactions": 0.22109317779541016
+      },
+      "transformation_time": 0.4946272373199463,
+      "write_time": 0.6147122383117676,
+      "end_time": 1768843471.7330701,
+      "total_execution_time": 1.3919551372528076
+    },
+    "gold_layer": {
+      "experiment_name": "all_optimizations_run2",
+      "stage": "gold_layer",
+      "start_time": 1768843473.922293,
+      "end_time": 1768843475.8871198,
+      "transformation_time": 0.5363123416900635,
+      "write_time": 1.0717236995697021,
+      "total_execution_time": 1.9648268222808838,
+      "query_metrics": [
+        {
+          "query": "day_to_day_sales.sql",
+          "transformation_time": 0.07509398460388184,
+          "result_count": 727,
+          "write_time": 0.18818402290344238
+        },
+        {
+          "query": "top_spenders.sql",
+          "transformation_time": 0.12476110458374023,
+          "result_count": 10,
+          "write_time": 0.20344305038452148
+        },
+        {
+          "query": "performance_analysis_by_country.sql",
+          "transformation_time": 0.09772515296936035,
+          "result_count": 243,
+          "write_time": 0.2926452159881592
+        },
+        {
+          "query": "sales_moving_average.sql",
+          "transformation_time": 0.03931117057800293,
+          "result_count": 727,
+          "write_time": 0.1619572639465332
+        },
+        {
+          "query": "top_products_by_category.sql",
+          "transformation_time": 0.19942092895507812,
+          "result_count": 47,
+          "write_time": 0.2254941463470459
+        }
+      ]
+    },
+    "total_transformation_time": 1.0309395790100098,
+    "total_time_with_io": 1.6864359378814697,
+    "total_time": 3.3567819595336914,
+    "status": "success"
+  },
+  {
+    "experiment_name": "all_optimizations",
+    "run_number": 3,
+    "timestamp": "2026-01-19T18:24:37.993579",
+    "config": {
+      "name": "All Optimizations",
+      "description": "All optimizations enabled",
+      "optimizations": {
+        "shuffle_partitions": 8,
+        "enable_aqe": true,
+        "enable_caching": true,
+        "enable_coalesce": true,
+        "compression": "snappy",
+        "broadcast_threshold": 10485760,
+        "enable_partitioning": true,
+        "partition_column": "category"
+      }
+    },
+    "silver_layer": {
+      "experiment_name": "all_optimizations_run3",
+      "stage": "silver_layer",
+      "start_time": 1768843477.9936159,
+      "table_transform_times": {
+        "users": 0.18781805038452148,
+        "products": 0.12161779403686523,
+        "transactions": 0.22608733177185059
+      },
+      "table_row_counts": {
+        "users": 9700,
+        "products": 9700,
+        "transactions": 16422
+      },
+      "table_write_times": {
+        "users": 0.12137603759765625,
+        "products": 0.2904503345489502,
+        "transactions": 0.19153690338134766
+      },
+      "transformation_time": 0.5355231761932373,
+      "write_time": 0.6033632755279541,
+      "end_time": 1768843479.411318,
+      "total_execution_time": 1.4177021980285645
+    },
+    "gold_layer": {
+      "experiment_name": "all_optimizations_run3",
+      "stage": "gold_layer",
+      "start_time": 1768843481.564397,
+      "end_time": 1768843483.5952342,
+      "transformation_time": 0.5876913070678711,
+      "write_time": 1.0955889225006104,
+      "total_execution_time": 2.030837059020996,
+      "query_metrics": [
+        {
+          "query": "day_to_day_sales.sql",
+          "transformation_time": 0.0677940845489502,
+          "result_count": 727,
+          "write_time": 0.18015503883361816
+        },
+        {
+          "query": "top_spenders.sql",
+          "transformation_time": 0.16998004913330078,
+          "result_count": 10,
+          "write_time": 0.19672584533691406
+        },
+        {
+          "query": "performance_analysis_by_country.sql",
+          "transformation_time": 0.11631107330322266,
+          "result_count": 243,
+          "write_time": 0.29871487617492676
+        },
+        {
+          "query": "sales_moving_average.sql",
+          "transformation_time": 0.05723404884338379,
+          "result_count": 727,
+          "write_time": 0.1716771125793457
+        },
+        {
+          "query": "top_products_by_category.sql",
+          "transformation_time": 0.17637205123901367,
+          "result_count": 47,
+          "write_time": 0.24831604957580566
+        }
+      ]
+    },
+    "total_transformation_time": 1.1232144832611084,
+    "total_time_with_io": 1.6989521980285645,
+    "total_time": 3.4485392570495605,
+    "status": "success"
+  },
+  {
+    "experiment_name": "all_but_partitioning",
+    "run_number": 1,
+    "timestamp": "2026-01-19T18:24:46.146155",
+    "config": {
+      "name": "All But Partitioning",
+      "description": "All optimizations enabled except partitioning",
+      "optimizations": {
+        "shuffle_partitions": 8,
+        "enable_aqe": true,
+        "enable_caching": true,
+        "enable_coalesce": true,
+        "compression": "snappy",
+        "broadcast_threshold": 10485760,
+        "enable_partitioning": false
+      }
+    },
+    "silver_layer": {
+      "experiment_name": "all_but_partitioning_run1",
+      "stage": "silver_layer",
+      "start_time": 1768843486.1462662,
+      "table_transform_times": {
+        "users": 0.18978190422058105,
+        "products": 0.11107993125915527,
+        "transactions": 0.21614623069763184
+      },
+      "table_row_counts": {
+        "users": 9700,
+        "products": 9700,
+        "transactions": 16422
+      },
+      "table_write_times": {
+        "users": 0.12807083129882812,
+        "products": 0.11557912826538086,
+        "transactions": 0.27509307861328125
+      },
+      "transformation_time": 0.5170080661773682,
+      "write_time": 0.5187430381774902,
+      "end_time": 1768843487.457154,
+      "total_execution_time": 1.3108878135681152
+    },
+    "gold_layer": {
+      "experiment_name": "all_but_partitioning_run1",
+      "stage": "gold_layer",
+      "start_time": 1768843489.719581,
+      "end_time": 1768843491.693526,
+      "transformation_time": 0.5371553897857666,
+      "write_time": 1.0664727687835693,
+      "total_execution_time": 1.973945140838623,
+      "query_metrics": [
+        {
+          "query": "day_to_day_sales.sql",
+          "transformation_time": 0.06885981559753418,
+          "result_count": 727,
+          "write_time": 0.18528199195861816
+        },
+        {
+          "query": "top_spenders.sql",
+          "transformation_time": 0.13656401634216309,
+          "result_count": 10,
+          "write_time": 0.20605206489562988
+        },
+        {
+          "query": "performance_analysis_by_country.sql",
+          "transformation_time": 0.14052128791809082,
+          "result_count": 243,
+          "write_time": 0.29903697967529297
+        },
+        {
+          "query": "sales_moving_average.sql",
+          "transformation_time": 0.03707718849182129,
+          "result_count": 727,
+          "write_time": 0.160599946975708
+        },
+        {
+          "query": "top_products_by_category.sql",
+          "transformation_time": 0.15413308143615723,
+          "result_count": 47,
+          "write_time": 0.2155017852783203
+        }
+      ]
+    },
+    "total_transformation_time": 1.0541634559631348,
+    "total_time_with_io": 1.5852158069610596,
+    "total_time": 3.2848329544067383,
+    "status": "success"
+  },
+  {
+    "experiment_name": "all_but_partitioning",
+    "run_number": 2,
+    "timestamp": "2026-01-19T18:24:53.775791",
+    "config": {
+      "name": "All But Partitioning",
+      "description": "All optimizations enabled except partitioning",
+      "optimizations": {
+        "shuffle_partitions": 8,
+        "enable_aqe": true,
+        "enable_caching": true,
+        "enable_coalesce": true,
+        "compression": "snappy",
+        "broadcast_threshold": 10485760,
+        "enable_partitioning": false
+      }
+    },
+    "silver_layer": {
+      "experiment_name": "all_but_partitioning_run2",
+      "stage": "silver_layer",
+      "start_time": 1768843493.77583,
+      "table_transform_times": {
+        "users": 0.20818805694580078,
+        "products": 0.10917353630065918,
+        "transactions": 0.17731714248657227
+      },
+      "table_row_counts": {
+        "users": 9700,
+        "products": 9700,
+        "transactions": 16422
+      },
+      "table_write_times": {
+        "users": 0.11470413208007812,
+        "products": 0.1037750244140625,
+        "transactions": 0.20740604400634766
+      },
+      "transformation_time": 0.4946787357330322,
+      "write_time": 0.4258852005004883,
+      "end_time": 1768843494.9771352,
+      "total_execution_time": 1.2013051509857178
+    },
+    "gold_layer": {
+      "experiment_name": "all_but_partitioning_run2",
+      "stage": "gold_layer",
+      "start_time": 1768843497.346784,
+      "end_time": 1768843499.335233,
+      "transformation_time": 0.5008511543273926,
+      "write_time": 1.1374647617340088,
+      "total_execution_time": 1.9884488582611084,
+      "query_metrics": [
+        {
+          "query": "day_to_day_sales.sql",
+          "transformation_time": 0.06934595108032227,
+          "result_count": 727,
+          "write_time": 0.2001628875732422
+        },
+        {
+          "query": "top_spenders.sql",
+          "transformation_time": 0.12620997428894043,
+          "result_count": 10,
+          "write_time": 0.18492603302001953
+        },
+        {
+          "query": "performance_analysis_by_country.sql",
+          "transformation_time": 0.09408307075500488,
+          "result_count": 243,
+          "write_time": 0.34613680839538574
+        },
+        {
+          "query": "sales_moving_average.sql",
+          "transformation_time": 0.04931807518005371,
+          "result_count": 727,
+          "write_time": 0.17439913749694824
+        },
+        {
+          "query": "top_products_by_category.sql",
+          "transformation_time": 0.1618940830230713,
+          "result_count": 47,
+          "write_time": 0.23183989524841309
+        }
+      ]
+    },
+    "total_transformation_time": 0.9955298900604248,
+    "total_time_with_io": 1.563349962234497,
+    "total_time": 3.189754009246826,
+    "status": "success"
+  },
+  {
+    "experiment_name": "all_but_partitioning",
+    "run_number": 3,
+    "timestamp": "2026-01-19T18:25:01.400912",
+    "config": {
+      "name": "All But Partitioning",
+      "description": "All optimizations enabled except partitioning",
+      "optimizations": {
+        "shuffle_partitions": 8,
+        "enable_aqe": true,
+        "enable_caching": true,
+        "enable_coalesce": true,
+        "compression": "snappy",
+        "broadcast_threshold": 10485760,
+        "enable_partitioning": false
+      }
+    },
+    "silver_layer": {
+      "experiment_name": "all_but_partitioning_run3",
+      "stage": "silver_layer",
+      "start_time": 1768843501.400961,
+      "table_transform_times": {
+        "users": 0.1855919361114502,
+        "products": 0.1519317626953125,
+        "transactions": 0.17708492279052734
+      },
+      "table_row_counts": {
+        "users": 9700,
+        "products": 9700,
+        "transactions": 16422
+      },
+      "table_write_times": {
+        "users": 0.15830087661743164,
+        "products": 0.12074089050292969,
+        "transactions": 0.19295382499694824
+      },
+      "transformation_time": 0.51460862159729,
+      "write_time": 0.47199559211730957,
+      "end_time": 1768843502.668462,
+      "total_execution_time": 1.2675011157989502
+    },
+    "gold_layer": {
+      "experiment_name": "all_but_partitioning_run3",
+      "stage": "gold_layer",
+      "start_time": 1768843504.959199,
+      "end_time": 1768843506.922555,
+      "transformation_time": 0.5404927730560303,
+      "write_time": 1.0893468856811523,
+      "total_execution_time": 1.9633560180664062,
+      "query_metrics": [
+        {
+          "query": "day_to_day_sales.sql",
+          "transformation_time": 0.06903314590454102,
+          "result_count": 727,
+          "write_time": 0.2261030673980713
+        },
+        {
+          "query": "top_spenders.sql",
+          "transformation_time": 0.12883877754211426,
+          "result_count": 10,
+          "write_time": 0.17954611778259277
+        },
+        {
+          "query": "performance_analysis_by_country.sql",
+          "transformation_time": 0.10194206237792969,
+          "result_count": 243,
+          "write_time": 0.29204702377319336
+        },
+        {
+          "query": "sales_moving_average.sql",
+          "transformation_time": 0.04918980598449707,
+          "result_count": 727,
+          "write_time": 0.16503477096557617
+        },
+        {
+          "query": "top_products_by_category.sql",
+          "transformation_time": 0.19148898124694824,
+          "result_count": 47,
+          "write_time": 0.22661590576171875
+        }
+      ]
+    },
+    "total_transformation_time": 1.0551013946533203,
+    "total_time_with_io": 1.561342477798462,
+    "total_time": 3.2308571338653564,
+    "status": "success"
+  },
+  {
+    "experiment_name": "shuffle_broadcast_and_aqe",
+    "run_number": 1,
+    "timestamp": "2026-01-19T18:25:09.030756",
+    "config": {
+      "name": "Shuffle, Broadcast, AQE and compression",
+      "description": "Optimize shuffle partitions, enable broadcast joins and AQE",
+      "optimizations": {
+        "shuffle_partitions": 8,
+        "enable_aqe": true,
+        "enable_caching": false,
+        "enable_coalesce": false,
+        "compression": "none",
+        "broadcast_threshold": 10485760
+      }
+    },
+    "silver_layer": {
+      "experiment_name": "shuffle_broadcast_and_aqe_run1",
+      "stage": "silver_layer",
+      "start_time": 1768843509.030784,
+      "table_transform_times": {
+        "users": 0.16430282592773438,
+        "products": 0.12922978401184082,
+        "transactions": 0.2715320587158203
+      },
+      "table_row_counts": {
+        "users": 9700,
+        "products": 9700,
+        "transactions": 16422
+      },
+      "table_write_times": {
+        "users": 0.15505504608154297,
+        "products": 0.12907981872558594,
+        "transactions": 0.25087594985961914
+      },
+      "transformation_time": 0.5650646686553955,
+      "write_time": 0.535010814666748,
+      "end_time": 1768843510.413176,
+      "total_execution_time": 1.382392168045044
+    },
+    "gold_layer": {
+      "experiment_name": "shuffle_broadcast_and_aqe_run1",
+      "stage": "gold_layer",
+      "start_time": 1768843512.5914922,
+      "end_time": 1768843514.477225,
+      "transformation_time": 0.5562407970428467,
+      "write_time": 1.159614086151123,
+      "total_execution_time": 1.885732889175415,
+      "query_metrics": [
+        {
+          "query": "day_to_day_sales.sql",
+          "transformation_time": 0.07384395599365234,
+          "result_count": 727,
+          "write_time": 0.19519615173339844
+        },
+        {
+          "query": "top_spenders.sql",
+          "transformation_time": 0.1432340145111084,
+          "result_count": 10,
+          "write_time": 0.18653273582458496
+        },
+        {
+          "query": "performance_analysis_by_country.sql",
+          "transformation_time": 0.11464881896972656,
+          "result_count": 243,
+          "write_time": 0.3574850559234619
+        },
+        {
+          "query": "sales_moving_average.sql",
+          "transformation_time": 0.04184913635253906,
+          "result_count": 727,
+          "write_time": 0.17883706092834473
+        },
+        {
+          "query": "top_products_by_category.sql",
+          "transformation_time": 0.1826648712158203,
+          "result_count": 47,
+          "write_time": 0.241563081741333
+        }
+      ]
+    },
+    "total_transformation_time": 1.1213054656982422,
+    "total_time_with_io": 1.694624900817871,
+    "total_time": 3.268125057220459,
+    "status": "success"
+  },
+  {
+    "experiment_name": "shuffle_broadcast_and_aqe",
+    "run_number": 2,
+    "timestamp": "2026-01-19T18:25:16.648708",
+    "config": {
+      "name": "Shuffle, Broadcast, AQE and compression",
+      "description": "Optimize shuffle partitions, enable broadcast joins and AQE",
+      "optimizations": {
+        "shuffle_partitions": 8,
+        "enable_aqe": true,
+        "enable_caching": false,
+        "enable_coalesce": false,
+        "compression": "none",
+        "broadcast_threshold": 10485760
+      }
+    },
+    "silver_layer": {
+      "experiment_name": "shuffle_broadcast_and_aqe_run2",
+      "stage": "silver_layer",
+      "start_time": 1768843516.648733,
+      "table_transform_times": {
+        "users": 0.16393780708312988,
+        "products": 0.13047194480895996,
+        "transactions": 0.23613882064819336
+      },
+      "table_row_counts": {
+        "users": 9700,
+        "products": 9700,
+        "transactions": 16422
+      },
+      "table_write_times": {
+        "users": 0.15467214584350586,
+        "products": 0.15500998497009277,
+        "transactions": 0.2230069637298584
+      },
+      "transformation_time": 0.5305485725402832,
+      "write_time": 0.532689094543457,
+      "end_time": 1768843517.9524999,
+      "total_execution_time": 1.3037669658660889
+    },
+    "gold_layer": {
+      "experiment_name": "shuffle_broadcast_and_aqe_run2",
+      "stage": "gold_layer",
+      "start_time": 1768843520.2019231,
+      "end_time": 1768843522.1201239,
+      "transformation_time": 0.6121857166290283,
+      "write_time": 1.123344898223877,
+      "total_execution_time": 1.9182007312774658,
+      "query_metrics": [
+        {
+          "query": "day_to_day_sales.sql",
+          "transformation_time": 0.0650792121887207,
+          "result_count": 727,
+          "write_time": 0.21285176277160645
+        },
+        {
+          "query": "top_spenders.sql",
+          "transformation_time": 0.1507730484008789,
+          "result_count": 10,
+          "write_time": 0.17635726928710938
+        },
+        {
+          "query": "performance_analysis_by_country.sql",
+          "transformation_time": 0.13532519340515137,
+          "result_count": 243,
+          "write_time": 0.3257169723510742
+        },
+        {
+          "query": "sales_moving_average.sql",
+          "transformation_time": 0.04217123985290527,
+          "result_count": 727,
+          "write_time": 0.17065191268920898
+        },
+        {
+          "query": "top_products_by_category.sql",
+          "transformation_time": 0.21883702278137207,
+          "result_count": 47,
+          "write_time": 0.23776698112487793
+        }
+      ]
+    },
+    "total_transformation_time": 1.1427342891693115,
+    "total_time_with_io": 1.656033992767334,
+    "total_time": 3.2219676971435547,
+    "status": "success"
+  },
+  {
+    "experiment_name": "shuffle_broadcast_and_aqe",
+    "run_number": 3,
+    "timestamp": "2026-01-19T18:25:24.289888",
+    "config": {
+      "name": "Shuffle, Broadcast, AQE and compression",
+      "description": "Optimize shuffle partitions, enable broadcast joins and AQE",
+      "optimizations": {
+        "shuffle_partitions": 8,
+        "enable_aqe": true,
+        "enable_caching": false,
+        "enable_coalesce": false,
+        "compression": "none",
+        "broadcast_threshold": 10485760
+      }
+    },
+    "silver_layer": {
+      "experiment_name": "shuffle_broadcast_and_aqe_run3",
+      "stage": "silver_layer",
+      "start_time": 1768843524.289942,
+      "table_transform_times": {
+        "users": 0.15683388710021973,
+        "products": 0.10827016830444336,
+        "transactions": 0.26630401611328125
+      },
+      "table_row_counts": {
+        "users": 9700,
+        "products": 9700,
+        "transactions": 16422
+      },
+      "table_write_times": {
+        "users": 0.15086674690246582,
+        "products": 0.12073397636413574,
+        "transactions": 0.24154901504516602
+      },
+      "transformation_time": 0.5314080715179443,
+      "write_time": 0.5131497383117676,
+      "end_time": 1768843525.595882,
+      "total_execution_time": 1.3059399127960205
+    },
+    "gold_layer": {
+      "experiment_name": "shuffle_broadcast_and_aqe_run3",
+      "stage": "gold_layer",
+      "start_time": 1768843527.863211,
+      "end_time": 1768843529.741976,
+      "transformation_time": 0.58420729637146,
+      "write_time": 1.1032171249389648,
+      "total_execution_time": 1.8787651062011719,
+      "query_metrics": [
+        {
+          "query": "day_to_day_sales.sql",
+          "transformation_time": 0.07877874374389648,
+          "result_count": 727,
+          "write_time": 0.1815812587738037
+        },
+        {
+          "query": "top_spenders.sql",
+          "transformation_time": 0.15800189971923828,
+          "result_count": 10,
+          "write_time": 0.17532896995544434
+        },
+        {
+          "query": "performance_analysis_by_country.sql",
+          "transformation_time": 0.12938880920410156,
+          "result_count": 243,
+          "write_time": 0.3473930358886719
+        },
+        {
+          "query": "sales_moving_average.sql",
+          "transformation_time": 0.04389595985412598,
+          "result_count": 727,
+          "write_time": 0.1625690460205078
+        },
+        {
+          "query": "top_products_by_category.sql",
+          "transformation_time": 0.17414188385009766,
+          "result_count": 47,
+          "write_time": 0.2363448143005371
+        }
+      ]
+    },
+    "total_transformation_time": 1.1156153678894043,
+    "total_time_with_io": 1.6163668632507324,
+    "total_time": 3.1847050189971924,
+    "status": "success"
+  }
+]

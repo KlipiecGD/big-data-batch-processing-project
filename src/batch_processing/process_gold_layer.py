@@ -76,9 +76,7 @@ def run_gold_layer_creation(
         # logger.info(f"Transactions loaded: {transactions.count()} records")
 
         # Load users (dimension table)
-        users = spark.read.parquet(
-            os.path.join(silver_path, "users"), inferSchema=True    
-        )
+        users = spark.read.parquet(os.path.join(silver_path, "users"), inferSchema=True)
 
         # Cache for performance
         users.cache()

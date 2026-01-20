@@ -105,7 +105,7 @@ def run_gold_layer_experiment(
 
         # If partitioning is enabled, log partition info
         if enable_partitioning:
-            logger.info(f"Products table loaded (partitioned by category for pruning)")
+            logger.info("Products table loaded (partitioned by category for pruning)")
 
         logger.info("Silver layer data loaded successfully")
 

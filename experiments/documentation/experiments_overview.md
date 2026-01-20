@@ -4,9 +4,9 @@ This directory contains a comprehensive A/B testing framework for evaluating dif
 
 ## Overview
 
-The experiments compare 8 different optimization configurations:
+The experiments compare 10 different optimization configurations:
 
-1. **Baseline** - No optimizations (Spark defaults)
+1. **Baseline** - No optimizations (Spark without any optimizations)
 2. **Shuffle Only** - Only shuffle partitions tuned to 8
 3. **AQE Only** - Only Adaptive Query Execution enabled
 4. **Caching Only** - Only DataFrame caching enabled
@@ -14,6 +14,8 @@ The experiments compare 8 different optimization configurations:
 6. **Broadcast Only** - Only auto-broadcast joins enabled
 7. **Partitioning Only** - Only partitioning products by category
 8. **All Optimizations** - All optimizations enabled together
+9. **All but partitioning** - All optimizations except partitioning
+10. **Shuffle, Broadcast, AQE and compression** - Only these three optimizatio
 
 ### Key Measurement Approach
 
@@ -38,7 +40,7 @@ experiments/
     ├── experiment_results_*.json         # Raw results data
     ├── comparison_chart.png              # Overall comparison
     ├── speedup_chart.png                 # Speedup vs baseline
-    ├── variability_chart.png             # Run-to-run variability
+    ├── variability_plots/                # Run-to-run variability plots for each experiment
     └── layer_breakdown.png               # Silver vs Gold time breakdown
 ```
 

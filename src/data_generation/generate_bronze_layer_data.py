@@ -184,7 +184,9 @@ def generate_transactions_dataset(
         df_products.to_csv(os.path.join(data_path, "products.csv"), index=False)
         logger.info(f"Saved products to {os.path.join(data_path, 'products.csv')}")
         df_transactions.to_csv(os.path.join(data_path, "transactions.csv"), index=False)
-        logger.info(f"Saved transactions to {os.path.join(data_path, 'transactions.csv')}")
+        logger.info(
+            f"Saved transactions to {os.path.join(data_path, 'transactions.csv')}"
+        )
 
     # Upload to Cloud Storage if required
     if save_to_cloud:

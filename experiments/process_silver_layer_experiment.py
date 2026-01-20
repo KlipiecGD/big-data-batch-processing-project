@@ -74,7 +74,9 @@ def run_silver_layer_experiment(
 
             # Read CSV
             input_path = os.path.join(bronze_path, f"{table}.csv")
-            df = spark.read.csv(input_path, header=True, inferSchema=True, dateFormat="yyyy-MM-dd")
+            df = spark.read.csv(
+                input_path, header=True, inferSchema=True, dateFormat="yyyy-MM-dd"
+            )
 
             # Start timing transformations (DAG building + execution)
             table_transform_start = time.time()
