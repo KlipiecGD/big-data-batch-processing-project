@@ -1,4 +1,5 @@
 import pytest
+from typing import Generator
 from pyspark.sql import SparkSession
 from tests.data.test_data_gold import (
     USERS_DATA,
@@ -11,17 +12,19 @@ from tests.data.test_data_gold import (
 
 
 @pytest.fixture(scope="session")
-def spark_session() -> SparkSession:
+def spark_session() -> Generator[SparkSession, None, None]:
     """
     Fixture to create a Spark session for testing.
     Returns:
         SparkSession: A Spark session object.
     """
-    return (
+    spark = (
         SparkSession.builder.master("local[1]")
         .appName("TransformationTests")
         .getOrCreate()
     )
+    yield spark
+    spark.stop()
 
 
 @pytest.fixture

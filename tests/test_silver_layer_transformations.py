@@ -1,5 +1,6 @@
 import pytest
 import os
+from typing import Generator
 from pyspark.sql import SparkSession
 
 from pyspark.sql.types import (
@@ -31,15 +32,17 @@ from src.batch_processing.clean_data import clean_data
 
 
 @pytest.fixture(scope="session")
-def spark_session() -> SparkSession:
+def spark_session() -> Generator[SparkSession, None, None]:
     """
     Fixture to create a Spark session for testing.
     """
-    return (
-        SparkSession.builder.master("local[1]")
-        .appName("SilverLayerTests")
+    spark = (
+        SparkSession.builder.master("local[2]")
+        .appName("SilverLayerTransformationsTest")
         .getOrCreate()
     )
+    yield spark
+    spark.stop()
 
 
 @pytest.fixture
