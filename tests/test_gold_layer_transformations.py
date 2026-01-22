@@ -28,7 +28,7 @@ def spark_session() -> Generator[SparkSession, None, None]:
 
 
 @pytest.fixture
-def setup_mock_views(spark_session) -> None:
+def setup_mock_views(spark_session: SparkSession) -> None:
     """
     Fixture to set up mock views for testing transformations.
     """
@@ -57,7 +57,7 @@ def setup_mock_views(spark_session) -> None:
     ).createOrReplaceTempView("transactions")
 
 
-def test_top_spenders(spark_session, setup_mock_views) -> None:
+def test_top_spenders(spark_session: SparkSession, setup_mock_views) -> None:
     """
     Test to verify the top spenders transformation.
     Expected top 3:
@@ -104,7 +104,7 @@ def test_top_spenders(spark_session, setup_mock_views) -> None:
         )
 
 
-def test_top_products_by_category(spark_session, setup_mock_views) -> None:
+def test_top_products_by_category(spark_session: SparkSession, setup_mock_views) -> None:
     """
     Test to verify the top products by category transformation.
     Expected:
@@ -153,7 +153,7 @@ def test_top_products_by_category(spark_session, setup_mock_views) -> None:
         )
 
 
-def test_sales_moving_average(spark_session, setup_mock_views) -> None:
+def test_sales_moving_average(spark_session: SparkSession, setup_mock_views) -> None:
     """
     Test to verify the sales moving average transformation.
     Verifies that moving averages are calculated correctly over 7-day windows.
@@ -220,7 +220,7 @@ def test_sales_moving_average(spark_session, setup_mock_views) -> None:
         )
 
 
-def test_performance_analysis_by_country(spark_session, setup_mock_views) -> None:
+def test_performance_analysis_by_country(spark_session: SparkSession, setup_mock_views) -> None:
     """
     Test to verify the performance analysis by country transformation.
     Expected:
@@ -309,7 +309,7 @@ def test_performance_analysis_by_country(spark_session, setup_mock_views) -> Non
         )
 
 
-def test_day_to_day_sales(spark_session, setup_mock_views) -> None:
+def test_day_to_day_sales(spark_session: SparkSession, setup_mock_views) -> None:
     """
     Test to verify the day-to-day sales transformation.
     Verifies daily sales, previous day sales, and percent change calculations.
