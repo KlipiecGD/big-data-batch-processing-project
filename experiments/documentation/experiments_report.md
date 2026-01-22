@@ -163,7 +163,7 @@ Partitioning is the most powerful tool for data skipping, but as your experiment
 * **Bucketing:** For very large tables frequently joined together, use **Bucketing** on the join key. This pre-shuffles the data, allowing Spark to perform "Sort-Merge Joins" without a runtime shuffle.
 * **Salting for Skewed Data:** If certain keys are heavily skewed, consider salting those keys to distribute the load more evenly across partitions.
 * **Select Appropriate Partition Columns:** Choosing the best partition column is an important step in optimizing the performance of your data processing:
-  * **High Cardinality:** Choose columns with high cardinality (many unique values) to ensure even data distribution. However, avoid columns with too many unique values that could lead to small files, e.g., user IDs.
+  * **Medium Cardinality:** Choose columns with medium cardinality (a moderate number of unique values) to ensure even data distribution. However, avoid columns with too many unique values that could lead to small files, e.g., user IDs.
   * **Query Patterns:** Analyze your query patterns to identify columns frequently used in filters or joins. Partitioning on these columns can significantly reduce the amount of data scanned.
   * **Data Growth:** Consider how your data will grow over time. Partitioning on time-based columns (e.g., date, month, year) is often effective for time-series data.
   * **File Sizes per Partition:** Monitor the size of files generated in each partition. Aim for a balance where partitions are neither too small (leading to many small files) nor too large (causing processing bottlenecks).

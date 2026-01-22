@@ -112,6 +112,7 @@ experiments:
       broadcast_threshold: 10485760  # 10MB
       enable_partitioning: false
 
+  # Experiment 10: Shuffle, Broadcast, AQE and compression
   shuffle_broadcast_and_aqe:
     name: "Shuffle, Broadcast, AQE and compression"
     description: "Optimize shuffle partitions, enable broadcast joins and AQE"
