@@ -15,7 +15,7 @@ The experiments compare 10 different optimization configurations:
 7. **Partitioning Only** - Only partitioning products by category
 8. **All Optimizations** - All optimizations enabled together
 9. **All but partitioning** - All optimizations except partitioning
-10. **Shuffle, Broadcast, AQE and compression** - Only these three optimizatio
+10. **Shuffle, Broadcast, AQE** - Only these three optimizations
 
 ### Key Measurement Approach
 

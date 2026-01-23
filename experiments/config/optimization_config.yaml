@@ -112,9 +112,9 @@ experiments:
       broadcast_threshold: 10485760  # 10MB
       enable_partitioning: false
 
-  # Experiment 10: Shuffle, Broadcast, AQE and compression
+  # Experiment 10: Shuffle, Broadcast, AQE
   shuffle_broadcast_and_aqe:
-    name: "Shuffle, Broadcast, AQE and compression"
+    name: "Shuffle, Broadcast, AQE"
     description: "Optimize shuffle partitions, enable broadcast joins and AQE"
     optimizations:
       shuffle_partitions: 8
@@ -134,9 +134,10 @@ execution:
   noise_level: 0.03 # Proportion of noise to add to the data
   null_wrong_proportion: 0.5 # Proportion of null/wrong entries in noise
 
+# Paths for data and results
 paths:
-  data_dir: "experiments/data/"
-  bronze_layer_dir: "experiments/data/bronze_layer/"
-  silver_layer_dir: "experiments/data/silver_layer/"
-  gold_layer_dir: "experiments/data/gold_layer/"
-  results_dir: "experiments/results/"
+  data_dir: "experiments/data/" # Base data directory
+  bronze_layer_dir: "experiments/data/bronze_layer/" # Bronze layer data directory
+  silver_layer_dir: "experiments/data/silver_layer/" # Silver layer data directory
+  gold_layer_dir: "experiments/data/gold_layer/" # Gold layer data directory
+  results_dir: "experiments/results/" # Results directory

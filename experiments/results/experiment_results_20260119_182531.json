@@ -2341,7 +2341,7 @@
     "run_number": 1,
     "timestamp": "2026-01-19T18:25:09.030756",
     "config": {
-      "name": "Shuffle, Broadcast, AQE and compression",
+      "name": "Shuffle, Broadcast, AQE",
       "description": "Optimize shuffle partitions, enable broadcast joins and AQE",
       "optimizations": {
         "shuffle_partitions": 8,
@@ -2427,7 +2427,7 @@
     "run_number": 2,
     "timestamp": "2026-01-19T18:25:16.648708",
     "config": {
-      "name": "Shuffle, Broadcast, AQE and compression",
+      "name": "Shuffle, Broadcast, AQE",
       "description": "Optimize shuffle partitions, enable broadcast joins and AQE",
       "optimizations": {
         "shuffle_partitions": 8,
@@ -2513,7 +2513,7 @@
     "run_number": 3,
     "timestamp": "2026-01-19T18:25:24.289888",
     "config": {
-      "name": "Shuffle, Broadcast, AQE and compression",
+      "name": "Shuffle, Broadcast, AQE",
       "description": "Optimize shuffle partitions, enable broadcast joins and AQE",
       "optimizations": {
         "shuffle_partitions": 8,
