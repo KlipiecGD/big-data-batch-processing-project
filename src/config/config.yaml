@@ -1,33 +1,37 @@
+# Data generation settings
 data_generation:
-  bronze_layer_path: bronze_layer/
-  silver_layer_path: silver_layer/
-  users_count: 10000
-  products_count: 10000
-  transactions_count: 18000
-  noise_level: 0.03
-  null_wrong_proportion: 0.5
-  save_locally: false
-  save_to_cloud: true
-  load_from_cloud: true
+  bronze_layer_path: bronze_layer/ # Path to bronze layer data
+  silver_layer_path: silver_layer/ # Path to silver layer data
+  users_count: 10000 # Number of users to generate
+  products_count: 10000 # Number of products to generate
+  transactions_count: 18000 # Number of transactions to generate
+  noise_level: 0.03 # Proportion of noise to introduce
+  null_wrong_proportion: 0.5 # Proportion of null vs wrong data in noise
+  save_locally: false # Save generated data locally if true
+  save_to_cloud: true # Save generated data to cloud storage if true
+  load_from_cloud: true # Load data from cloud storage if true
 
+# SQL query files and paths
 queries:
-  queries_path: sql_queries/
-  query_files: ['day_to_day_sales.sql', 'top_spenders.sql', 'performance_analysis_by_country.sql', 'sales_moving_average.sql', 'top_products_by_category.sql']
+  queries_path: sql_queries/ # Path to SQL query files
+  query_files: ['day_to_day_sales.sql', 'top_spenders.sql', 'performance_analysis_by_country.sql', 'sales_moving_average.sql', 'top_products_by_category.sql'] # List of SQL query files to execute
 
+# Database table management settings
 database:
-  gold_layer_tables_schema: gold_layer/create_tables.sql
   required_tables:
-    creation_order: ['users', 'products', 'transactions']
-    drop_order: ['transactions', 'products', 'users']
+    creation_order: ['users', 'products', 'transactions'] # Order to create tables
+    drop_order: ['transactions', 'products', 'users'] # Order to drop tables
 
+# DAG execution settings
 dag:
-  retries: 2
-  retries_delay: 60
-  slack_channel: "#all-airflow"
+  retries: 2 # Number of retries for failed tasks 
+  retries_delay: 60 # Delay between retries in seconds
+  slack_channel: "#all-airflow" # Slack channel for notifications
 
+# Cloud storage and BigQuery settings
 cloud:
-  default_location: US
-  gcs_bucket_name: big-data-project-bucket-123456
-  bq_gold_layer_dataset: gold_layer
+  default_location: US # Default location for cloud resources
+  gcs_bucket_name: big-data-project-bucket-123456 # GCS bucket name
+  bq_gold_layer_dataset: gold_layer # BigQuery gold layer dataset name
 
 

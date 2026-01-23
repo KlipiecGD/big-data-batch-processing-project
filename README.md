@@ -93,17 +93,7 @@ Create a `.env` file in the project root. Add path to your Google Cloud service 
 GOOGLE_APPLICATION_CREDENTIALS=/path/to/your/google-cloud-credentials.json
 ```
 
-### 4. Modify config/config.yaml
-
-Update the `src/config/config.yaml` file to specify your GCS bucket name and BigQuery dataset name:
-
-```yaml
-cloud:
-  gcs_bucket_name: "your-gcs-bucket-name"
-  bq_gold_layer_dataset: "your-bigquery-dataset-name"
-```
-
-### 5. Create Consolidated `airflow.env` File
+### 4. Create Consolidated `airflow.env` File
 
 ```bash
 # --- Airflow Configuration ---
@@ -120,13 +110,9 @@ export AIRFLOW_CONN_SLACK_CONN='{
 }'
 export OBJC_DISABLE_INITIALIZE_FORK_SAFETY=YES
 ```
+### 5. Modify `config/config.yaml`
 
-For slack connection, you also need to specify the name of Slack channel in config file located at `src/config/config.yaml`:
-
-```yaml
-dag:
-  slack_channel: "#your-slack-channel"
-```
+Update the `src/config/config.yaml` file to specify all necessary parameters such as GCS bucket names, BigQuery dataset names, and other project-specific settings.
 
 ### 6. Load Environment and Initialize Airflow
 
