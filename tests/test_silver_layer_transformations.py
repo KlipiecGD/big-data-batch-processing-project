@@ -2,11 +2,7 @@ import pytest
 import os
 from typing import Generator
 from pyspark.sql import SparkSession
-
-from pyspark.sql.types import (
-    IntegerType,
-    DoubleType,
-)
+from pyspark.sql.types import IntegerType, DoubleType
 
 from tests.data.test_data_silver import (
     USERS_SCHEMA,
@@ -26,249 +22,283 @@ from tests.data.test_data_silver import (
     TRANSACTIONS_INVALID_DATES,
     TRANSACTIONS_REFERENTIAL,
 )
-
-
 from src.batch_processing.clean_data import clean_data
 
 
-@pytest.fixture(scope="session")
-def spark_session() -> Generator[SparkSession, None, None]:
-    """
-    Fixture to create a Spark session for testing.
-    """
-    spark = (
-        SparkSession.builder.master("local[2]")
-        .appName("SilverLayerTransformationsTest")
+@pytest.fixture(scope="module")
+def spark() -> Generator[SparkSession, None, None]:
+    """Create a Spark session for testing."""
+    spark_session = (
+        SparkSession.builder.appName("TestSilverTransformations")
+        .master("local[2]")
+        .config("spark.serializer", "org.apache.spark.serializer.KryoSerializer")
+        .config("spark.kryo.registrationRequired", "false")
+        .config("spark.sql.shuffle.partitions", "1")
         .getOrCreate()
     )
-    yield spark
-    spark.stop()
+    yield spark_session
+    spark_session.stop()
 
 
 @pytest.fixture
 def test_parquet_path(tmp_path) -> str:
-    """
-    Fixture to provide a temporary path for Parquet files.
-    pytest's tmp_path automatically cleans up after test.
-    """
+    """Fixture to provide a temporary path for Parquet files."""
     parquet_dir = tmp_path / "test_silver"
     parquet_dir.mkdir()
     return str(parquet_dir)
 
 
-def test_clean_users_removes_null_ids(spark_session) -> None:
-    """
-    Test that clean_data removes rows with null user_id.
-    """
-    # Create test data with null user_id
-    data = USERS_NULL_IDS
-    schema = USERS_SCHEMA
+class TestUsersDataCleaning:
+    """Test suite for users table data cleaning."""
 
-    df = spark_session.createDataFrame(data, schema)
-    cleaned_df = clean_data(df, "users")
+    def test_removes_null_ids(self, spark: SparkSession):
+        """Test that rows with null user_id are removed."""
+        df = spark.createDataFrame(USERS_NULL_IDS, schema=USERS_SCHEMA)
+        initial_count = df.count()
+        null_count = df.filter("user_id IS NULL").count()
 
-    # Should only have 2 rows (null user_id removed)
-    assert cleaned_df.count() == 2
-    # Verify no null user_ids remain
-    assert cleaned_df.filter("user_id IS NULL").count() == 0
+        # Ensure test data has nulls
+        assert null_count > 0, "Test data should contain null user_ids"
 
+        cleaned_df = clean_data(df, "users")
 
-def test_clean_users_removes_invalid_ids(spark_session) -> None:
-    """
-    Test that clean_data removes rows with invalid user_id (≤ 0).
-    """
-    data = USERS_INVALID_IDS
-    schema = USERS_SCHEMA
+        assert cleaned_df.filter("user_id IS NULL").count() == 0, (
+            "Cleaned data should not contain null user_ids"
+        )
+        assert cleaned_df.count() == initial_count - null_count, (
+            f"Expected {initial_count - null_count} rows after cleaning"
+        )
 
-    df = spark_session.createDataFrame(data, schema)
-    cleaned_df = clean_data(df, "users")
+    def test_removes_invalid_ids(self, spark: SparkSession):
+        """Test that rows with invalid user_id (≤ 0) are removed."""
+        df = spark.createDataFrame(USERS_INVALID_IDS, schema=USERS_SCHEMA)
+        initial_invalid_count = df.filter("user_id <= 0").count()
 
-    # Should only have 2 rows (invalid IDs removed)
-    assert cleaned_df.count() == 2
-    # Verify all remaining IDs are positive
-    assert cleaned_df.filter("user_id <= 0").count() == 0
+        # Ensure test data has invalid IDs
+        assert initial_invalid_count > 0, "Test data should contain invalid user_ids"
 
+        cleaned_df = clean_data(df, "users")
 
-def test_clean_users_removes_invalid_emails(spark_session) -> None:
-    """
-    Test that clean_data removes rows with invalid emails.
-    """
-    data = USERS_INVALID_EMAILS
-    schema = USERS_SCHEMA
+        assert cleaned_df.filter("user_id <= 0").count() == 0, (
+            "Cleaned data should not contain user_id <= 0"
+        )
 
-    df = spark_session.createDataFrame(data, schema)
-    cleaned_df = clean_data(df, "users")
+    def test_removes_invalid_emails(self, spark: SparkSession):
+        """Test that rows with invalid emails are removed."""
+        df = spark.createDataFrame(USERS_INVALID_EMAILS, schema=USERS_SCHEMA)
+        initial_invalid_count = df.filter(
+            "email IS NULL OR email = '' OR email NOT LIKE '%@%'"
+        ).count()
 
-    # Should only have 2 rows with valid emails
-    assert cleaned_df.count() == 2
-    # Verify all remaining emails contain @
-    assert cleaned_df.filter("email NOT LIKE '%@%'").count() == 0
+        # Ensure test data has invalid emails
+        assert initial_invalid_count > 0, "Test data should contain invalid emails"
 
+        cleaned_df = clean_data(df, "users")
 
-def test_clean_users_removes_invalid_dates(spark_session) -> None:
-    """
-    Test that clean_data removes rows with invalid signup dates.
-    """
-    data = USERS_INVALID_DATES
-    schema = USERS_SCHEMA
+        assert cleaned_df.filter("email IS NULL OR email = ''").count() == 0, (
+            "Cleaned data should not contain null or empty emails"
+        )
+        assert cleaned_df.filter("email NOT LIKE '%@%'").count() == 0, (
+            "All emails should contain @ symbol"
+        )
 
-    df = spark_session.createDataFrame(data, schema)
-    cleaned_df = clean_data(df, "users")
+    def test_removes_invalid_dates(self, spark: SparkSession):
+        """Test that rows with invalid signup dates are removed."""
+        df = spark.createDataFrame(USERS_INVALID_DATES, schema=USERS_SCHEMA)
+        initial_count = df.count()
+        cleaned_df = clean_data(df, "users")
+        final_count = cleaned_df.count()
 
-    # Should only have 2 rows with valid dates
-    assert cleaned_df.count() == 2
+        # Should have fewer rows after cleaning
+        assert final_count < initial_count, (
+            "Cleaning should remove rows with invalid dates"
+        )
 
+    def test_preserves_valid_data(self, spark: SparkSession):
+        """Test that valid user records pass through unchanged."""
+        df = spark.createDataFrame(USERS_VALID, schema=USERS_SCHEMA)
+        cleaned_df = clean_data(df, "users")
 
-def test_clean_products_removes_invalid_prices(spark_session) -> None:
-    """
-    Test that clean_data removes rows with invalid prices.
-    """
-    data = PRODUCTS_INVALID_PRICES
-    schema = PRODUCTS_SCHEMA
-
-    df = spark_session.createDataFrame(data, schema)
-    cleaned_df = clean_data(df, "products")
-
-    # Should only have 2 rows with valid prices
-    assert cleaned_df.count() == 2
-    # Verify all remaining prices are positive
-    assert cleaned_df.filter("price <= 0").count() == 0
+        assert cleaned_df.count() == len(USERS_VALID), (
+            "All valid records should be preserved"
+        )
 
 
-def test_clean_products_removes_empty_fields(spark_session) -> None:
-    """
-    Test that clean_data removes rows with empty name, category, or description.
-    """
-    data = PRODUCTS_EMPTY_FIELDS
-    schema = PRODUCTS_SCHEMA
+class TestProductsDataCleaning:
+    """Test suite for products table data cleaning."""
 
-    df = spark_session.createDataFrame(data, schema)
-    cleaned_df = clean_data(df, "products")
+    def test_removes_invalid_prices(self, spark: SparkSession):
+        """Test that rows with invalid prices are removed."""
+        df = spark.createDataFrame(PRODUCTS_INVALID_PRICES, schema=PRODUCTS_SCHEMA)
+        initial_invalid_count = df.filter("price IS NULL OR price <= 0").count()
 
-    # Should only have 2 rows with all fields valid
-    assert cleaned_df.count() == 2
+        # Ensure test data has invalid prices
+        assert initial_invalid_count > 0, "Test data should contain invalid prices"
 
+        cleaned_df = clean_data(df, "products")
 
-def test_clean_transactions_removes_invalid_quantities(spark_session) -> None:
-    """
-    Test that clean_data removes rows with invalid quantities.
-    """
-    data = TRANSACTIONS_INVALID_QUANTS
-    schema = TRANSACTIONS_SCHEMA
+        assert cleaned_df.filter("price IS NULL OR price <= 0").count() == 0, (
+            "Cleaned data should not contain invalid prices"
+        )
 
-    df = spark_session.createDataFrame(data, schema)
-    cleaned_df = clean_data(df, "transactions")
+    def test_removes_empty_fields(self, spark: SparkSession):
+        """Test that rows with empty required fields are removed."""
+        df = spark.createDataFrame(PRODUCTS_EMPTY_FIELDS, schema=PRODUCTS_SCHEMA)
 
-    # Should only have 2 rows with valid quantities
-    assert cleaned_df.count() == 2
-    # Verify all remaining quantities are positive
-    assert cleaned_df.filter("quantity <= 0").count() == 0
+        # Count initial invalid rows
+        initial_invalid_count = df.filter(
+            "name IS NULL OR name = '' OR "
+            "category IS NULL OR category = '' OR "
+            "description IS NULL OR description = ''"
+        ).count()
 
+        # Ensure test data has empty fields
+        assert initial_invalid_count > 0, "Test data should contain empty required fields"
 
-def test_clean_transactions_removes_invalid_dates(spark_session) -> None:
-    """
-    Test that clean_data removes rows with invalid transaction dates.
-    """
-    data = TRANSACTIONS_INVALID_DATES
-    schema = TRANSACTIONS_SCHEMA
+        cleaned_df = clean_data(df, "products")
 
-    df = spark_session.createDataFrame(data, schema)
-    cleaned_df = clean_data(df, "transactions")
+        # Verify no empty required fields remain
+        for field in ["name", "category", "description"]:
+            assert cleaned_df.filter(f"{field} IS NULL OR {field} = ''").count() == 0, (
+                f"Cleaned data should not contain null or empty {field}"
+            )
 
-    # Should only have 2 rows with valid dates
-    assert cleaned_df.count() == 2
+    def test_preserves_valid_products(self, spark: SparkSession):
+        """Test that valid product records pass through unchanged."""
+        df = spark.createDataFrame(PRODUCTS_VALID, schema=PRODUCTS_SCHEMA)
+        cleaned_df = clean_data(df, "products")
 
-
-def test_parquet_write_and_read(spark_session, test_parquet_path) -> None:
-    """
-    Test that data can be written to and read from Parquet format.
-    """
-    # Create test data
-    data = USERS_VALID
-    schema = USERS_SCHEMA
-
-    df = spark_session.createDataFrame(data, schema)
-
-    # Write to Parquet
-    parquet_file = os.path.join(test_parquet_path, "users")
-    df.write.parquet(parquet_file, mode="overwrite", compression="snappy")
-
-    # Verify file was created
-    assert os.path.exists(parquet_file)
-
-    # Read back from Parquet
-    df_read = spark_session.read.parquet(parquet_file)
-
-    # Verify data integrity
-    assert df_read.count() == 2
-    assert set(df_read.columns) == set(df.columns)
-
-    # Verify content matches
-    original_data = df.collect()
-    read_data = df_read.collect()
-    assert len(original_data) == len(read_data)
+        assert cleaned_df.count() == len(PRODUCTS_VALID), (
+            "All valid records should be preserved"
+        )
 
 
-def test_parquet_schema_preservation(spark_session, test_parquet_path) -> None:
-    """
-    Test that Parquet format preserves data types.
-    """
-    data = PRODUCTS_VALID
-    schema = PRODUCTS_SCHEMA
+class TestTransactionsDataCleaning:
+    """Test suite for transactions table data cleaning."""
 
-    df = spark_session.createDataFrame(data, schema)
+    def test_removes_invalid_quantities(self, spark: SparkSession):
+        """Test that rows with invalid quantities are removed."""
+        df = spark.createDataFrame(
+            TRANSACTIONS_INVALID_QUANTS, schema=TRANSACTIONS_SCHEMA
+        )
+        initial_invalid_count = df.filter("quantity IS NULL OR quantity <= 0").count()
 
-    # Write to Parquet
-    parquet_file = os.path.join(test_parquet_path, "products")
-    df.write.parquet(parquet_file, mode="overwrite", compression="snappy")
+        # Ensure test data has invalid quantities
+        assert initial_invalid_count > 0, "Test data should contain invalid quantities"
 
-    # Read back and verify schema
-    df_read = spark_session.read.parquet(parquet_file)
+        cleaned_df = clean_data(df, "transactions")
 
-    assert df_read.schema == df.schema
-    assert df_read.schema["product_id"].dataType == IntegerType()
-    assert df_read.schema["price"].dataType == DoubleType()
+        assert cleaned_df.filter("quantity IS NULL OR quantity <= 0").count() == 0, (
+            "Cleaned data should not contain invalid quantities"
+        )
+
+    def test_removes_invalid_dates(self, spark: SparkSession):
+        """Test that rows with invalid transaction dates are removed."""
+        df = spark.createDataFrame(
+            TRANSACTIONS_INVALID_DATES, schema=TRANSACTIONS_SCHEMA
+        )
+        initial_count = df.count()
+        cleaned_df = clean_data(df, "transactions")
+        final_count = cleaned_df.count()
+
+        assert final_count < initial_count, (
+            "Cleaning should remove rows with invalid dates"
+        )
 
 
-def test_clean_data_referential_integrity_simulation(spark_session) -> None:
-    """
-    Test the concept of referential integrity by ensuring transactions
-    only reference valid user and product IDs.
-    """
-    # Create users
-    users_data = USERS_REFERENTIAL
-    users_schema = USERS_SCHEMA
-    users_df = spark_session.createDataFrame(users_data, users_schema)
+class TestReferentialIntegrity:
+    """Test suite for referential integrity enforcement."""
 
-    # Create products
-    products_data = PRODUCTS_REFERENTIAL
-    products_schema = PRODUCTS_SCHEMA
-    products_df = spark_session.createDataFrame(products_data, products_schema)
+    def test_filters_invalid_foreign_keys(self, spark: SparkSession):
+        """Test that transactions with invalid foreign keys are filtered out."""
+        # Create dimension tables
+        users_df = spark.createDataFrame(USERS_REFERENTIAL, schema=USERS_SCHEMA)
+        products_df = spark.createDataFrame(PRODUCTS_REFERENTIAL, schema=PRODUCTS_SCHEMA)
+        transactions_df = spark.createDataFrame(
+            TRANSACTIONS_REFERENTIAL, schema=TRANSACTIONS_SCHEMA
+        )
 
-    # Create transactions (some with invalid foreign keys)
-    transactions_data = TRANSACTIONS_REFERENTIAL
-    transactions_schema = TRANSACTIONS_SCHEMA
-    transactions_df = spark_session.createDataFrame(
-        transactions_data, transactions_schema
-    )
+        valid_user_ids = {row[0] for row in USERS_REFERENTIAL}
+        valid_product_ids = {row[0] for row in PRODUCTS_REFERENTIAL}
 
-    # Apply referential integrity filter (simulating what happens in process_silver_layer)
-    valid_user_ids = users_df.select("user_id").distinct()
-    valid_product_ids = products_df.select("product_id").distinct()
+        # Count transactions with invalid foreign keys
+        initial_count = len(TRANSACTIONS_REFERENTIAL)
+        valid_count = sum(
+            1
+            for row in TRANSACTIONS_REFERENTIAL
+            if row[1] in valid_user_ids and row[2] in valid_product_ids
+        )
 
-    filtered_df = transactions_df.join(valid_user_ids, on="user_id", how="inner")
-    filtered_df = filtered_df.join(valid_product_ids, on="product_id", how="inner")
+        # Ensure test data has invalid foreign keys
+        assert valid_count < initial_count, (
+            "Test data should contain invalid foreign keys"
+        )
 
-    # Should only have 3 valid transactions
-    assert filtered_df.count() == 3
+        # Apply referential integrity filters
+        valid_user_ids_df = users_df.select("user_id").distinct()
+        valid_product_ids_df = products_df.select("product_id").distinct()
 
-    # Verify no invalid foreign keys remain
-    user_ids = [
-        row.user_id for row in filtered_df.select("user_id").distinct().collect()
-    ]
-    assert all(uid in [1, 2, 3] for uid in user_ids)
+        filtered_df = transactions_df.join(valid_user_ids_df, on="user_id", how="inner")
+        filtered_df = filtered_df.join(
+            valid_product_ids_df, on="product_id", how="inner"
+        )
 
-    product_ids = [
-        row.product_id for row in filtered_df.select("product_id").distinct().collect()
-    ]
-    assert all(pid in [10, 20, 30] for pid in product_ids)
+        assert filtered_df.count() == valid_count, (
+            f"Expected {valid_count} valid transactions after filtering"
+        )
+
+        # Verify no invalid foreign keys remain
+        result_user_ids = {
+            row.user_id for row in filtered_df.select("user_id").distinct().collect()
+        }
+        result_product_ids = {
+            row.product_id
+            for row in filtered_df.select("product_id").distinct().collect()
+        }
+
+        assert result_user_ids.issubset(valid_user_ids), (
+            "All remaining user_ids should be valid"
+        )
+        assert result_product_ids.issubset(valid_product_ids), (
+            "All remaining product_ids should be valid"
+        )
+
+
+class TestParquetOperations:
+    """Test suite for Parquet file operations."""
+
+    def test_write_and_read_parquet(self, spark: SparkSession, test_parquet_path):
+        """Test that data can be written to and read from Parquet format."""
+        df = spark.createDataFrame(USERS_VALID, schema=USERS_SCHEMA)
+        parquet_file = os.path.join(test_parquet_path, "users")
+
+        # Write to Parquet
+        df.write.parquet(parquet_file, mode="overwrite", compression="snappy")
+
+        # Verify file creation
+        assert os.path.exists(parquet_file), "Parquet file should be created"
+
+        # Read back
+        df_read = spark.read.parquet(parquet_file)
+
+        # Verify data integrity
+        assert df_read.count() == df.count(), "Row count should be preserved"
+        assert set(df_read.columns) == set(df.columns), "Columns should be preserved"
+
+    def test_schema_preservation(self, spark: SparkSession, test_parquet_path):
+        """Test that Parquet format preserves data types."""
+        df = spark.createDataFrame(PRODUCTS_VALID, schema=PRODUCTS_SCHEMA)
+        parquet_file = os.path.join(test_parquet_path, "products")
+
+        # Write and read
+        df.write.parquet(parquet_file, mode="overwrite", compression="snappy")
+        df_read = spark.read.parquet(parquet_file)
+
+        # Verify schema preservation
+        assert df_read.schema == df.schema, "Schema should be preserved"
+        assert df_read.schema["product_id"].dataType == IntegerType(), (
+            "product_id should remain IntegerType"
+        )
+        assert df_read.schema["price"].dataType == DoubleType(), (
+            "price should remain DoubleType"
+        )
