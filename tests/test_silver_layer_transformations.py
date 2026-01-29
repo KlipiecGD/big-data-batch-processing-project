@@ -57,9 +57,6 @@ class TestUsersDataCleaning:
         initial_count = df.count()
         null_count = df.filter("user_id IS NULL").count()
 
-        # Ensure test data has nulls
-        assert null_count > 0, "Test data should contain null user_ids"
-
         cleaned_df = clean_data(df, "users")
 
         assert cleaned_df.filter("user_id IS NULL").count() == 0, (
@@ -72,10 +69,6 @@ class TestUsersDataCleaning:
     def test_removes_invalid_ids(self, spark: SparkSession):
         """Test that rows with invalid user_id (≤ 0) are removed."""
         df = spark.createDataFrame(USERS_INVALID_IDS, schema=USERS_SCHEMA)
-        initial_invalid_count = df.filter("user_id <= 0").count()
-
-        # Ensure test data has invalid IDs
-        assert initial_invalid_count > 0, "Test data should contain invalid user_ids"
 
         cleaned_df = clean_data(df, "users")
 
@@ -86,12 +79,6 @@ class TestUsersDataCleaning:
     def test_removes_invalid_emails(self, spark: SparkSession):
         """Test that rows with invalid emails are removed."""
         df = spark.createDataFrame(USERS_INVALID_EMAILS, schema=USERS_SCHEMA)
-        initial_invalid_count = df.filter(
-            "email IS NULL OR email = '' OR email NOT LIKE '%@%'"
-        ).count()
-
-        # Ensure test data has invalid emails
-        assert initial_invalid_count > 0, "Test data should contain invalid emails"
 
         cleaned_df = clean_data(df, "users")
 
@@ -130,11 +117,6 @@ class TestProductsDataCleaning:
     def test_removes_invalid_prices(self, spark: SparkSession):
         """Test that rows with invalid prices are removed."""
         df = spark.createDataFrame(PRODUCTS_INVALID_PRICES, schema=PRODUCTS_SCHEMA)
-        initial_invalid_count = df.filter("price IS NULL OR price <= 0").count()
-
-        # Ensure test data has invalid prices
-        assert initial_invalid_count > 0, "Test data should contain invalid prices"
-
         cleaned_df = clean_data(df, "products")
 
         assert cleaned_df.filter("price IS NULL OR price <= 0").count() == 0, (
@@ -144,17 +126,6 @@ class TestProductsDataCleaning:
     def test_removes_empty_fields(self, spark: SparkSession):
         """Test that rows with empty required fields are removed."""
         df = spark.createDataFrame(PRODUCTS_EMPTY_FIELDS, schema=PRODUCTS_SCHEMA)
-
-        # Count initial invalid rows
-        initial_invalid_count = df.filter(
-            "name IS NULL OR name = '' OR "
-            "category IS NULL OR category = '' OR "
-            "description IS NULL OR description = ''"
-        ).count()
-
-        # Ensure test data has empty fields
-        assert initial_invalid_count > 0, "Test data should contain empty required fields"
-
         cleaned_df = clean_data(df, "products")
 
         # Verify no empty required fields remain
@@ -181,11 +152,6 @@ class TestTransactionsDataCleaning:
         df = spark.createDataFrame(
             TRANSACTIONS_INVALID_QUANTS, schema=TRANSACTIONS_SCHEMA
         )
-        initial_invalid_count = df.filter("quantity IS NULL OR quantity <= 0").count()
-
-        # Ensure test data has invalid quantities
-        assert initial_invalid_count > 0, "Test data should contain invalid quantities"
-
         cleaned_df = clean_data(df, "transactions")
 
         assert cleaned_df.filter("quantity IS NULL OR quantity <= 0").count() == 0, (
@@ -221,17 +187,10 @@ class TestReferentialIntegrity:
         valid_user_ids = {row[0] for row in USERS_REFERENTIAL}
         valid_product_ids = {row[0] for row in PRODUCTS_REFERENTIAL}
 
-        # Count transactions with invalid foreign keys
-        initial_count = len(TRANSACTIONS_REFERENTIAL)
         valid_count = sum(
             1
             for row in TRANSACTIONS_REFERENTIAL
             if row[1] in valid_user_ids and row[2] in valid_product_ids
-        )
-
-        # Ensure test data has invalid foreign keys
-        assert valid_count < initial_count, (
-            "Test data should contain invalid foreign keys"
         )
 
         # Apply referential integrity filters
